@@ -102,6 +102,59 @@ class AlertEngineTest {
         assertEquals(AlertLevel.GREEN, rising.level)
     }
 
+    private fun buoy(lat: Double, lon: Double, wave: Double? = null, pres: Double? = null, tendency: Double? = null) =
+        Buoy("41049", lat, lon, 0L, wave, pres, tendency)
+
+    @Test
+    fun `phenomenal seas at a buoy in zone is orange`() {
+        val a = AlertEngine.assess(
+            ridge, emptyList(), emptyList(), emptyList(), null,
+            listOf(buoy(30.0, -40.0, wave = 13.5))
+        )
+        assertEquals(AlertLevel.ORANGE, a.level)
+    }
+
+    @Test
+    fun `high seas at a buoy outside zone are ignored`() {
+        val a = AlertEngine.assess(
+            ridge, emptyList(), emptyList(), emptyList(), null,
+            listOf(buoy(10.0, 150.0, wave = 13.5))
+        )
+        assertEquals(AlertLevel.GREEN, a.level)
+    }
+
+    @Test
+    fun `violent low pressure at a buoy in zone is orange and deep low is yellow`() {
+        val violent = AlertEngine.assess(
+            ridge, emptyList(), emptyList(), emptyList(), null,
+            listOf(buoy(30.0, -40.0, pres = 945.0))
+        )
+        assertEquals(AlertLevel.ORANGE, violent.level)
+        val deep = AlertEngine.assess(
+            ridge, emptyList(), emptyList(), emptyList(), null,
+            listOf(buoy(30.0, -40.0, pres = 975.0))
+        )
+        assertEquals(AlertLevel.YELLOW, deep.level)
+    }
+
+    @Test
+    fun `fast pressure drop at a buoy in zone is yellow`() {
+        val a = AlertEngine.assess(
+            ridge, emptyList(), emptyList(), emptyList(), null,
+            listOf(buoy(30.0, -40.0, tendency = -6.2))
+        )
+        assertEquals(AlertLevel.YELLOW, a.level)
+    }
+
+    @Test
+    fun `calm buoys stay green`() {
+        val a = AlertEngine.assess(
+            ridge, emptyList(), emptyList(), emptyList(), null,
+            listOf(buoy(30.0, -40.0, wave = 1.5, pres = 1015.0, tendency = 0.4))
+        )
+        assertEquals(AlertLevel.GREEN, a.level)
+    }
+
     @Test
     fun `worst signal wins`() {
         val a = AlertEngine.assess(

@@ -4,11 +4,12 @@ A native Android app that watches for tsunami danger and screams RED ALERT when 
 
 ## What it tracks
 
-| Signal | Source | Red-alert trigger |
+| Signal | Source | Alert trigger |
 | --- | --- | --- |
-| Earthquakes (M4.5+, last 24 h) | USGS real-time GeoJSON feed | M8+ anywhere, or M7.5+ inside the watch zone |
-| Official tsunami warnings | NWS `api.weather.gov` active alerts | Any active Tsunami Warning |
-| Coastal water rise | NOAA CO-OPS tide gauge (configurable station ID) | +25 cm or more between 6-minute readings |
+| Earthquakes (M4.5+, last 24 h) | USGS + EMSC global feeds, deduplicated | M8+ anywhere, or M7.5+ inside the watch zone → RED |
+| Official tsunami warnings | NWS `api.weather.gov` active alerts | Any active Tsunami Warning → RED |
+| Coastal water rise | NOAA CO-OPS tide gauge (station ID) or any global IOC gauge (`ioc:code`) | +25 cm or more between 6-minute readings → RED |
+| Global buoys (~850 worldwide) | NOAA NDBC latest-observations feed | 12 m+ seas or ≤950 hPa at a buoy in the watch zone → ORANGE |
 | Barometric pressure | The phone's own pressure sensor | Rapid pressure crash raises the level |
 
 Threat level is GREEN → YELLOW → ORANGE → RED. Going RED triggers a full-screen flashing alarm, vibration siren, and a high-priority notification. A **Start 24/7 watch** button runs a foreground service that keeps polling every 5 minutes in the background. **Test red alert** lets you drill the alarm.

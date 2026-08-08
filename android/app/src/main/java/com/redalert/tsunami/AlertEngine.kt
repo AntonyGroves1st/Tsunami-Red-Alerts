@@ -16,7 +16,8 @@ object AlertEngine {
         quakes: List<Quake>,
         tsunamiAlerts: List<TsunamiAlert>,
         waterReadings: List<WaterReading>,
-        pressureTrendHpaPerHr: Double?
+        pressureTrendHpaPerHr: Double?,
+        buoys: List<Buoy> = emptyList()
     ): Assessment {
         var level = AlertLevel.GREEN
         val reasons = mutableListOf<String>()
@@ -67,6 +68,25 @@ object AlertEngine {
             when {
                 t <= -3.0 -> raise(AlertLevel.ORANGE, fmt("Barometric pressure crashing (%.1f hPa/hr)", t))
                 t <= -1.5 -> raise(AlertLevel.YELLOW, fmt("Barometric pressure falling (%.1f hPa/hr)", t))
+            }
+        }
+
+        for (b in buoys) {
+            if (!region.contains(b.lat, b.lon)) continue
+            b.waveHeightM?.let { h ->
+                when {
+                    h >= 12.0 -> raise(AlertLevel.ORANGE, fmt("Buoy %s reporting PHENOMENAL %.1f m seas", b.id, h))
+                    h >= 8.0 -> raise(AlertLevel.YELLOW, fmt("Buoy %s reporting very high %.1f m seas", b.id, h))
+                }
+            }
+            b.pressureHpa?.let { p ->
+                when {
+                    p <= 950.0 -> raise(AlertLevel.ORANGE, fmt("Buoy %s in violent low (%.0f hPa)", b.id, p))
+                    p <= 980.0 -> raise(AlertLevel.YELLOW, fmt("Buoy %s in deep low (%.0f hPa)", b.id, p))
+                }
+            }
+            b.pressureTendencyHpa?.let { d ->
+                if (d <= -5.0) raise(AlertLevel.YELLOW, fmt("Buoy %s pressure dropping fast (%+.1f hPa/3h)", b.id, d))
             }
         }
 

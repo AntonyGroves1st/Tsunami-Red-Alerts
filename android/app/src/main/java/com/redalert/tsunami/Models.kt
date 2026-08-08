@@ -31,6 +31,17 @@ data class WaterReading(
     val meters: Double
 )
 
+/** One buoy from the global NDBC latest-observations feed (includes DART and international partners). */
+data class Buoy(
+    val id: String,
+    val lat: Double,
+    val lon: Double,
+    val timeMs: Long,
+    val waveHeightM: Double?,
+    val pressureHpa: Double?,
+    val pressureTendencyHpa: Double?
+)
+
 /** A lat/lon bounding box around a rift, ridge, or subduction zone to watch. */
 data class WatchRegion(
     val label: String,

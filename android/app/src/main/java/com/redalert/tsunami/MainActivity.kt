@@ -167,7 +167,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                 val snapshot = DataRepository.fetchAll(station)
                 val assessment = AlertEngine.assess(
                     region, snapshot.quakes, snapshot.tsunamiAlerts,
-                    snapshot.waterReadings, pressureTrendHpaPerHr()
+                    snapshot.waterReadings, pressureTrendHpaPerHr(), snapshot.buoys
                 )
                 render(region, snapshot)
                 showAssessment(assessment, isTest = false)
@@ -196,6 +196,30 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                 val ago = DateUtils.getRelativeTimeSpanString(q.timeMs)
                 String.format(Locale.US, "%sM%.1f  %s\n     %s • depth %.0f km", marker, q.magnitude, q.place, ago, q.depthKm)
             }
+
+        val buoys = snapshot.buoys
+        binding.buoysText.text = if (buoys.isEmpty()) {
+            getString(R.string.no_buoys)
+        } else {
+            val inZone = buoys.filter { region.contains(it.lat, it.lon) }
+            val topSeas = inZone.filter { it.waveHeightM != null }
+                .sortedByDescending { it.waveHeightM!! }.take(5)
+            val minPressure = inZone.filter { it.pressureHpa != null }
+                .minByOrNull { it.pressureHpa!! }
+            buildString {
+                append("Buoys reporting worldwide: ${buoys.size}\n")
+                append("In watch zone: ${inZone.size}")
+                minPressure?.let {
+                    append(String.format(Locale.US, "\nLowest pressure in zone: %.0f hPa @ buoy %s", it.pressureHpa, it.id))
+                }
+                if (topSeas.isNotEmpty()) {
+                    append("\n\nHighest seas in zone:")
+                    for (b in topSeas) {
+                        append(String.format(Locale.US, "\n  %s  %.1f m  (%.1f, %.1f)", b.id, b.waveHeightM, b.lat, b.lon))
+                    }
+                }
+            }
+        }
 
         val readings = snapshot.waterReadings
         binding.waterText.text = if (readings.isEmpty()) {

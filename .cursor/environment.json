@@ -1,8 +1,8 @@
 {
-  "name": "Tsunami Red Alert (Android)",
+  "name": "World Football + Tsunami (Android)",
   "user": "ubuntu",
   "build": {
     "dockerfile": "Dockerfile"
   },
-  "install": "cd android && printf 'sdk.dir=%s\\n' \"${ANDROID_HOME:-/opt/android-sdk}\" > local.properties && ./gradlew --no-daemon assembleDebug"
+  "install": "for d in android football; do if [ -d \"$d\" ]; then ( cd \"$d\" && printf 'sdk.dir=%s\\n' \"${ANDROID_HOME:-/opt/android-sdk}\" > local.properties && ./gradlew --no-daemon assembleDebug ); fi; done"
 }

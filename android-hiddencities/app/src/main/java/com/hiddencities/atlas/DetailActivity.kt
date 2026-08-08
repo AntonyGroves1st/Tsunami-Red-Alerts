@@ -51,7 +51,7 @@ class DetailActivity : AppCompatActivity() {
         binding.detailName.text = site.name
         binding.detailAka.text = site.aka?.let { "also known as $it" } ?: ""
         binding.detailAka.visibility = if (site.aka == null) android.view.View.GONE else android.view.View.VISIBLE
-        binding.detailLocation.text = "${site.region} · ${site.country}"
+        binding.detailLocation.text = "${site.region} · ${site.country} · ${site.continent}"
         binding.detailType.text = site.type.label
         binding.detailDescription.text = site.description
 

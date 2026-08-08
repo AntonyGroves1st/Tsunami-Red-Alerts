@@ -3,10 +3,12 @@ package com.hiddencities.atlas
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.hiddencities.atlas.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -17,6 +19,7 @@ class MainActivity : AppCompatActivity() {
 
     private var query: String = ""
     private var selectedType: SiteType? = null
+    private var selectedContinent: String? = null
     private var favoritesOnly: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,11 +42,41 @@ class MainActivity : AppCompatActivity() {
         binding.siteList.layoutManager = LinearLayoutManager(this)
         binding.siteList.adapter = adapter
 
-        buildChips()
+        buildContinentChips()
+        buildTypeChips()
         refresh()
     }
 
-    private fun buildChips() {
+    private fun buildContinentChips() {
+        val group = binding.continentChips
+        group.removeAllViews()
+
+        val everywhere = makeChip(getString(R.string.all_continents), checked = true) { chip ->
+            if (chip.isChecked) {
+                selectedContinent = null
+                uncheckExcept(group, chip)
+                refresh()
+            } else {
+                chip.isChecked = true
+            }
+        }
+        group.addView(everywhere)
+
+        SiteData.continents().forEach { continent ->
+            group.addView(makeChip(continent, checked = false) { chip ->
+                if (chip.isChecked) {
+                    selectedContinent = continent
+                    uncheckExcept(group, chip)
+                } else {
+                    selectedContinent = null
+                    everywhere.isChecked = true
+                }
+                refresh()
+            })
+        }
+    }
+
+    private fun buildTypeChips() {
         val group = binding.filterChips
         group.removeAllViews()
 
@@ -77,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** Type chips behave like a single-selection group (favorites chip is independent). */
+    /** Type chips behave like a single-selection group; the favorites chip is independent. */
     private fun uncheckTypeChipsExcept(keep: Chip) {
         val group = binding.filterChips
         for (i in 0 until group.childCount) {
@@ -85,6 +118,13 @@ class MainActivity : AppCompatActivity() {
             if (chip === keep) continue
             if (chip.text == getString(R.string.favorites_only)) continue
             chip.isChecked = false
+        }
+    }
+
+    private fun uncheckExcept(group: ChipGroup, keep: Chip) {
+        for (i in 0 until group.childCount) {
+            val chip = group.getChildAt(i) as? Chip ?: continue
+            if (chip !== keep) chip.isChecked = false
         }
     }
 
@@ -101,11 +141,12 @@ class MainActivity : AppCompatActivity() {
         val results = SiteData.filter(
             query = query,
             type = selectedType,
+            continent = selectedContinent,
             favoritesOnly = favoritesOnly,
             favoriteIds = favorites.ids()
         )
         adapter.submitList(results) { adapter.notifyDataSetChanged() }
-        binding.emptyLabel.visibility = if (results.isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
+        binding.emptyLabel.visibility = if (results.isEmpty()) View.VISIBLE else View.GONE
         binding.countLabel.text = getString(R.string.site_count, results.size)
     }
 

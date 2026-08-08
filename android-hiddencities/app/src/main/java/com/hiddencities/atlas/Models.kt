@@ -8,7 +8,8 @@ enum class SiteType(val label: String) {
     TUNNEL_NETWORK("Tunnel network"),
     MINE("Mine city"),
     CAVE_SYSTEM("Cave system"),
-    BUNKER("Hidden bunker");
+    BUNKER("Hidden bunker"),
+    MYTH_GATEWAY("Legendary underworld");
 
     companion object {
         fun fromLabel(label: String): SiteType? = values().firstOrNull { it.label == label }
@@ -20,7 +21,8 @@ enum class Access(val label: String) {
     PUBLIC_TOUR("Open to visitors"),
     GUIDED_ONLY("Guided access only"),
     RESTRICTED("Restricted / permit"),
-    ABANDONED("Abandoned / unofficial")
+    ABANDONED("Abandoned / unofficial"),
+    LEGENDARY("Legend / mythic")
 }
 
 /**
@@ -35,6 +37,7 @@ data class HiddenSite(
     val aka: String?,
     val country: String,
     val region: String,
+    val continent: String,
     val type: SiteType,
     val lat: Double,
     val lng: Double,
@@ -47,7 +50,7 @@ data class HiddenSite(
 ) {
     /** Text blob used for free-text search. */
     val searchIndex: String by lazy {
-        listOf(name, aka ?: "", country, region, type.label, era, shortDesc, description)
+        listOf(name, aka ?: "", country, region, continent, type.label, era, shortDesc, description)
             .joinToString(" ")
             .lowercase()
     }

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Hidden Cities Atlas</string>
-    <string name="tagline">Hidden caves &amp; entrances to the underground cities</string>
+    <string name="tagline">Hidden caves &amp; secret stairs to a global underground</string>
     <string name="search_hint">Search sites, countries, regions</string>
     <string name="menu_search">Search</string>
     <string name="favorites_only">Favorites</string>
-    <string name="all_types">All</string>
+    <string name="all_types">All types</string>
+    <string name="all_continents">Everywhere</string>
     <string name="open_in_maps">Open entrance in maps</string>
     <string name="copy_coords">Copy coordinates</string>
     <string name="coords_copied">Coordinates copied</string>

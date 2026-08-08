@@ -8,8 +8,8 @@ import org.junit.Test
 class SiteDataTest {
 
     @Test
-    fun catalogIsNonEmpty() {
-        assertTrue("Expected a populated atlas", SiteData.all.size >= 20)
+    fun catalogIsLarge() {
+        assertTrue("Expected a large global atlas", SiteData.all.size >= 100)
     }
 
     @Test
@@ -23,11 +23,22 @@ class SiteDataTest {
         SiteData.all.forEach { s ->
             assertTrue("blank name", s.name.isNotBlank())
             assertTrue("blank country", s.country.isNotBlank())
+            assertTrue("blank continent for ${s.id}", s.continent.isNotBlank())
             assertTrue("blank entrance hint for ${s.id}", s.entranceHint.isNotBlank())
             assertTrue("blank description for ${s.id}", s.description.isNotBlank())
             assertTrue("bad latitude for ${s.id}", s.lat in -90.0..90.0)
             assertTrue("bad longitude for ${s.id}", s.lng in -180.0..180.0)
         }
+    }
+
+    @Test
+    fun coversManyCountriesAndAllContinents() {
+        val countries = SiteData.all.map { it.country }.toSet()
+        assertTrue("Expected broad country coverage", countries.size >= 25)
+
+        val continents = SiteData.continents()
+        listOf("Africa", "Asia", "Europe", "North America", "South America", "Oceania", "Mythic")
+            .forEach { assertTrue("missing continent $it", continents.contains(it)) }
     }
 
     @Test
@@ -37,13 +48,11 @@ class SiteDataTest {
     }
 
     @Test
-    fun freeTextSearchMatchesNameAndCountry() {
+    fun freeTextSearchMatchesNamesAndPlaces() {
         val turkey = SiteData.filter(query = "turkey")
-        assertTrue(turkey.isNotEmpty())
-        assertTrue(turkey.all { it.country == "Turkey" })
+        assertTrue(turkey.size >= 5)
+        assertTrue(turkey.any { it.id == "derinkuyu" })
 
-        // "derinkuyu" also appears in Kaymaklı's description (they are linked),
-        // so search is a substring match, not an exact-name match.
         val derinkuyu = SiteData.filter(query = "derinkuyu")
         assertTrue(derinkuyu.any { it.id == "derinkuyu" })
         assertEquals("derinkuyu", derinkuyu.first().id)
@@ -52,8 +61,8 @@ class SiteDataTest {
     @Test
     fun multiTokenSearchRequiresAllTokens() {
         val results = SiteData.filter(query = "salt poland")
-        assertEquals(1, results.size)
-        assertEquals("wieliczka", results.first().id)
+        assertTrue(results.map { it.id }.contains("wieliczka"))
+        assertTrue(results.all { it.country == "Poland" })
     }
 
     @Test
@@ -61,6 +70,29 @@ class SiteDataTest {
         val cities = SiteData.filter(type = SiteType.UNDERGROUND_CITY)
         assertTrue(cities.isNotEmpty())
         assertTrue(cities.all { it.type == SiteType.UNDERGROUND_CITY })
+
+        val myths = SiteData.filter(type = SiteType.MYTH_GATEWAY)
+        assertTrue("Expected legendary gateways", myths.size >= 5)
+    }
+
+    @Test
+    fun continentFilterRestrictsResults() {
+        val asia = SiteData.filter(continent = "Asia")
+        assertTrue(asia.isNotEmpty())
+        assertTrue(asia.all { it.continent == "Asia" })
+
+        val combined = SiteData.filter(type = SiteType.UNDERGROUND_CITY, continent = "Asia")
+        assertTrue(combined.all { it.type == SiteType.UNDERGROUND_CITY && it.continent == "Asia" })
+        assertTrue(combined.any { it.id == "derinkuyu" })
+    }
+
+    @Test
+    fun mythicEntriesAreClearlyLabelled() {
+        val mythic = SiteData.all.filter { it.continent == "Mythic" }
+        assertTrue(mythic.isNotEmpty())
+        assertTrue(mythic.all { it.type == SiteType.MYTH_GATEWAY })
+        assertTrue(mythic.all { it.access == Access.LEGENDARY })
+        assertTrue(mythic.any { it.id == "agartha" })
     }
 
     @Test

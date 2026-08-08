@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Tsunami Red Alert</string>
+    <string name="title">TSUNAMI RED ALERT</string>
+    <string name="subtitle">Mid-rift seismic • tsunami warnings • water rise • pressure</string>
+    <string name="updated_at">Last update: %1$s</string>
+    <string name="section_alerts">Official tsunami alerts (NWS)</string>
+    <string name="section_quakes">Earthquakes — last 24 h, M4.5+ (USGS)</string>
+    <string name="section_water">Coastal water level (NOAA tide gauge)</string>
+    <string name="section_pressure">Barometric pressure (device sensor)</string>
+    <string name="no_tsunami_alerts">No active tsunami alerts. The coast is quiet.</string>
+    <string name="no_quakes">No M4.5+ quakes reported in the last 24 h.</string>
+    <string name="no_water_data">No water level data. Enter a NOAA station ID (e.g. 8443970 Boston, 8518750 New York, 9410230 La Jolla) and refresh.</string>
+    <string name="no_barometer">No barometer on this device — pressure tracking disabled.</string>
+    <string name="pressure_waiting">Waiting for first barometer reading…</string>
+    <string name="refresh">Refresh now</string>
+    <string name="test_alert">Test red alert</string>
+    <string name="start_watch">Start 24/7 watch</string>
+    <string name="stop_watch">Stop 24/7 watch</string>
+    <string name="station_hint">NOAA tide station ID</string>
+    <string name="region_label">Watch zone</string>
+    <string name="red_overlay_title">🚨 TSUNAMI RED ALERT 🚨</string>
+    <string name="red_overlay_sub">MOVE TO HIGH GROUND — THIS IS NOT A DRILL UNLESS MARKED TEST</string>
+    <string name="dismiss">Dismiss</string>
+</resources>

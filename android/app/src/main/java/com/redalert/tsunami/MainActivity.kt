@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private var watchRunning = false
     private var overlayPulse: ObjectAnimator? = null
     private var screenFlash: ObjectAnimator? = null
+    private var scanningPulse: ObjectAnimator? = null
     private var lastShownLevel = AlertLevel.GREEN
     private lateinit var alarmSiren: AlarmSiren
     private var alarmVibrator: Vibrator? = null
@@ -100,6 +101,10 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         }
         binding.watchButton.setOnClickListener { toggleWatchService() }
         binding.dismissOverlayButton.setOnClickListener { hideRedOverlay() }
+
+        // Reflect any already-running background watch (e.g. after reopening the app).
+        watchRunning = WatchService.isRunning
+        updateWatchUi()
 
         alarmSiren = AlarmSiren(this)
 
@@ -326,6 +331,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onDestroy() {
         hideRedOverlay()
+        stopScanningPulse()
         super.onDestroy()
     }
 
@@ -337,9 +343,38 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             ContextCompat.startForegroundService(this, Intent(this, WatchService::class.java))
             watchRunning = true
         }
+        updateWatchUi()
+    }
+
+    /** Sync the watch button label and the top "SCANNING" indicator to the watch state. */
+    private fun updateWatchUi() {
         binding.watchButton.text = getString(
             if (watchRunning) R.string.stop_watch else R.string.start_watch
         )
+        if (watchRunning) {
+            binding.scanningIndicator.visibility = View.VISIBLE
+            startScanningPulse()
+        } else {
+            stopScanningPulse()
+            binding.scanningIndicator.visibility = View.GONE
+        }
+    }
+
+    /** Gentle breathing pulse on the scanning dot to signal the watch is live. */
+    private fun startScanningPulse() {
+        if (scanningPulse?.isRunning == true) return
+        scanningPulse = ObjectAnimator.ofFloat(binding.scanningDot, View.ALPHA, 1f, 0.2f).apply {
+            duration = 850
+            repeatMode = ValueAnimator.REVERSE
+            repeatCount = ValueAnimator.INFINITE
+            start()
+        }
+    }
+
+    private fun stopScanningPulse() {
+        scanningPulse?.cancel()
+        scanningPulse = null
+        binding.scanningDot.alpha = 1f
     }
 
     private fun requestNotificationPermissionIfNeeded() {

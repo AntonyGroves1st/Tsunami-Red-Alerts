@@ -29,9 +29,11 @@ class WatchService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == ACTION_STOP) {
+            isRunning = false
             stopSelf()
             return START_NOT_STICKY
         }
+        isRunning = true
         Notifier.ensureChannels(this)
         startInForeground(statusNotification("Watching the rift… first check pending"))
         scope.launch { pollLoop() }
@@ -85,11 +87,15 @@ class WatchService : Service() {
             .build()
 
     override fun onDestroy() {
+        isRunning = false
         scope.cancel()
         super.onDestroy()
     }
 
     companion object {
+        /** True while the foreground watch is active; lets the UI restore the scanning state. */
+        @Volatile
+        var isRunning = false
         const val ACTION_STOP = "com.redalert.tsunami.STOP_WATCH"
         const val WATCH_NOTIFICATION_ID = 42
         const val POLL_INTERVAL_MS = 5L * 60L * 1000L

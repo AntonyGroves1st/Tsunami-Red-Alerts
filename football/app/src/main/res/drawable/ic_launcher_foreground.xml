@@ -1,0 +1,13 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Soccer ball centered within the adaptive icon safe zone -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,30 C40.7,30 30,40.7 30,54 C30,67.3 40.7,78 54,78 C67.3,78 78,67.3 78,54 C78,40.7 67.3,30 54,30 Z M54,34 C64.8,34 73.6,42.6 74,53.3 L66.5,58.7 L58,55.6 L54,44 L58.2,38.2 C56.8,37.9 55.4,37.8 54,37.8 C52.6,37.8 51.2,37.9 49.8,38.2 L54,44 L45.5,55.6 L37,58.7 C36.5,52.9 38.1,47.1 41.7,42.6 C44.8,38.6 49.2,35.6 54,34.4 Z" />
+    <path
+        android:fillColor="#B6FF3B"
+        android:pathData="M54,46 L61,51 L58.3,59 L49.7,59 L47,51 Z" />
+</vector>

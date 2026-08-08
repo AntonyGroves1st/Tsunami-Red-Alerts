@@ -1,0 +1,8 @@
+{
+  "name": "Tsunami Red Alert (Android)",
+  "user": "ubuntu",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "install": "cd android && printf 'sdk.dir=%s\\n' \"${ANDROID_HOME:-/opt/android-sdk}\" > local.properties && ./gradlew --no-daemon assembleDebug"
+}

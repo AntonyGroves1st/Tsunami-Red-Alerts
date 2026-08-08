@@ -25,6 +25,13 @@
     <color name="red_overlay">#E7DC2626</color>
     <color name="red_overlay_core">#F0E03131</color>
     <color name="red_overlay_rim">#F26B0F0F</color>
+    <color name="scan">#22D3EE</color>
+    <color name="scan_deep">#0B2A33</color>
+    <color name="scan_top">#0F3540</color>
+    <color name="scan_edge">#22D3EE</color>
+    <color name="scan_text">#A5F3FC</color>
+    <color name="scan_glow">#B322D3EE</color>
+
     <color name="accent">#EF4444</color>
     <color name="accent_glow">#B3EF4444</color>
     <color name="white_glow">#CCFFFFFF</color>

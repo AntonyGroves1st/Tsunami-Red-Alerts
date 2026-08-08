@@ -263,7 +263,11 @@ fun WagCard(wag: Wag, rank: Int, onClick: (() -> Unit)? = null, modifier: Modifi
                         .background(Brush.verticalGradient(listOf(accent, accent.copy(alpha = 0.5f)))),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(wag.name.split(" ").mapNotNull { it.firstOrNull()?.toString() }.take(2).joinToString(""), color = Color(0xFF04140D), fontWeight = FontWeight.Black)
+                    if (wag.imageUrl != null) {
+                        AsyncImage(model = wag.imageUrl, contentDescription = wag.name, modifier = Modifier.size(48.dp).clip(CircleShape))
+                    } else {
+                        Text(wag.name.split(" ").mapNotNull { it.firstOrNull()?.toString() }.take(2).joinToString(""), color = Color(0xFF04140D), fontWeight = FontWeight.Black)
+                    }
                 }
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {

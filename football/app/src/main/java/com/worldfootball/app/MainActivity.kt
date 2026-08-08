@@ -156,7 +156,7 @@ private fun WorldFootballApp() {
                     WfTab.WEATHER -> WeatherScreen(state, open)
                     WfTab.LEGENDS -> LegendsScreen(state, open)
                     WfTab.YOUNG_GUNS -> YoungGunsScreen(state, open)
-                    WfTab.WAGS -> WagsScreen(open)
+                    WfTab.WAGS -> WagsScreen(state, open)
                     WfTab.STATS -> StatsScreen(open)
                     WfTab.MEMORIAM -> NewsScreen(state, NewsCategory.MEMORIAM, "No memoriam stories in the feed.", open)
                 }

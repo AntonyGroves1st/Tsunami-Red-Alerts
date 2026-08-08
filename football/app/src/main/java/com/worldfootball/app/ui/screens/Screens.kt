@@ -187,7 +187,7 @@ fun YoungGunsScreen(state: FootballUiState, onOpen: (DetailTarget) -> Unit, modi
 }
 
 @Composable
-fun WagsScreen(onOpen: (DetailTarget) -> Unit, modifier: Modifier = Modifier) {
+fun WagsScreen(state: FootballUiState, onOpen: (DetailTarget) -> Unit, modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = listPadding,
@@ -196,7 +196,7 @@ fun WagsScreen(onOpen: (DetailTarget) -> Unit, modifier: Modifier = Modifier) {
         item {
             Text("Ranked for looks and brains — tap any profile for more.", color = TextDim, style = MaterialTheme.typography.bodyMedium)
         }
-        itemsIndexed(StaticData.wags) { i, w -> WagCard(w, rank = i + 1, onClick = { onOpen(DetailTarget.WagDetail(w, i + 1)) }) }
+        itemsIndexed(state.wags) { i, w -> WagCard(w, rank = i + 1, onClick = { onOpen(DetailTarget.WagDetail(w, i + 1)) }) }
     }
 }
 

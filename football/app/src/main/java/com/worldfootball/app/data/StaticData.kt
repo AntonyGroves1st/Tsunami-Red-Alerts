@@ -116,7 +116,8 @@ object StaticData {
             0xFFFF7A00, era = "1993–2011",
             bio = "Before two devastating knee injuries, R9 was unstoppable — pace, power and cold finishing rolled into one. He still returned to top-score at the 2002 World Cup.",
             honours = listOf("World Cup 1994, 2002", "Ballon d'Or ×2", "UEFA Cup", "La Liga"),
-            traits = listOf("Pace", "Dribbling", "Finishing")
+            traits = listOf("Pace", "Dribbling", "Finishing"),
+            wiki = "Ronaldo (Brazilian footballer)"
         ),
         Player(
             "Zinédine Zidane", "France", "Attacking Mid", "Juventus / Real Madrid", 96,
@@ -170,7 +171,8 @@ object StaticData {
             0xFF2F80ED, era = "1998–2019",
             bio = "The heartbeat of the greatest club and international sides of the era, Xavi dictated tempo with immaculate positioning and never-ending short passing.",
             honours = listOf("World Cup 2010", "Euro 2008, 2012", "Champions League ×4", "La Liga ×8"),
-            traits = listOf("Passing", "Positioning", "Tempo")
+            traits = listOf("Passing", "Positioning", "Tempo"),
+            wiki = "Xavi"
         ),
         Player(
             "Andrés Iniesta", "Spain", "Midfielder", "Barcelona", 95,
@@ -263,7 +265,8 @@ object StaticData {
             0xFFFFC400, era = "Breakout 2023",
             bio = "Nicknamed 'Little Messi', Estêvão is a direct right-winger who cuts inside onto his left and already produces goals and assists at senior level.",
             honours = listOf("Move to Chelsea", "Brazil call-ups"),
-            traits = listOf("1v1", "Left foot", "End product")
+            traits = listOf("1v1", "Left foot", "End product"),
+            wiki = "Estêvão Willian"
         ),
         Player(
             "Leny Yoro", "France", "Centre-Back", "Manchester United", 84,
@@ -299,7 +302,8 @@ object StaticData {
             0xFF27AE60, era = "Breakout 2023",
             bio = "A tireless, technically clean midfielder who wins the ball high and keeps possession ticking, tipped for a decade at the top.",
             honours = listOf("Ligue 1", "Portugal senior"),
-            traits = listOf("Pressing", "Passing", "Energy")
+            traits = listOf("Pressing", "Passing", "Energy"),
+            wiki = "João Neves (footballer, born 2004)"
         )
     )
 

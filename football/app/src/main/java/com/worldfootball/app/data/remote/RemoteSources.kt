@@ -53,6 +53,12 @@ class RemoteSources(
         return get("$SPORTSDB/searchplayers.php?p=$q")
     }
 
+    /** Wikipedia REST summary (contains a Commons-hosted lead image). */
+    suspend fun wikipediaImage(title: String): String {
+        val t = java.net.URLEncoder.encode(title.trim().replace(' ', '_'), "UTF-8")
+        return get("https://en.wikipedia.org/api/rest_v1/page/summary/$t")
+    }
+
     private suspend fun get(url: String): String = withContext(Dispatchers.IO) {
         try {
             val request = Request.Builder()

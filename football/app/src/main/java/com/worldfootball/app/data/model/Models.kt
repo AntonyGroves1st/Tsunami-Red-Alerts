@@ -96,7 +96,8 @@ data class Player(
     val era: String = "",
     val bio: String = "",
     val honours: List<String> = emptyList(),
-    val traits: List<String> = emptyList()
+    val traits: List<String> = emptyList(),
+    val wiki: String = ""
 )
 
 data class StatLine(val label: String, val value: String)
@@ -111,7 +112,9 @@ data class Wag(
     val accent: Long,
     val nationality: String = "",
     val profession: String = "",
-    val highlights: List<String> = emptyList()
+    val highlights: List<String> = emptyList(),
+    val imageUrl: String? = null,
+    val wiki: String = ""
 ) {
     val overall: Int get() = ((looksScore + brainsScore) / 2.0).toInt()
 }

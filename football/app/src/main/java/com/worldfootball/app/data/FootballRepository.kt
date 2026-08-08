@@ -3,10 +3,12 @@ package com.worldfootball.app.data
 import com.worldfootball.app.data.model.Match
 import com.worldfootball.app.data.model.NewsItem
 import com.worldfootball.app.data.model.Player
+import com.worldfootball.app.data.model.Wag
 import com.worldfootball.app.data.model.WeatherNow
 import com.worldfootball.app.data.parse.RssParser
 import com.worldfootball.app.data.parse.SportsDbParser
 import com.worldfootball.app.data.parse.WeatherParser
+import com.worldfootball.app.data.parse.WikiParser
 import com.worldfootball.app.data.remote.RemoteSources
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -23,13 +25,30 @@ class FootballRepository(
             .sortedByDescending { it.publishedEpochMs }
     }
 
-    /** Enriches curated players with a real portrait from TheSportsDB (best-effort). */
+    /**
+     * Enriches curated players with a real portrait: TheSportsDB cutout first
+     * (transparent headshot), then Wikipedia's Commons lead image as a fallback.
+     */
     suspend fun enrichPlayers(players: List<Player>): List<Player> = coroutineScope {
         players
             .map { p ->
                 async {
-                    val img = SportsDbParser.parsePlayerImage(remote.searchPlayer(p.name))
+                    val cutout = SportsDbParser.parsePlayerImage(remote.searchPlayer(p.name))
+                    val img = cutout
+                        ?: WikiParser.parseImage(remote.wikipediaImage(p.wiki.ifBlank { p.name }))
                     if (img != null) p.copy(imageUrl = img) else p
+                }
+            }
+            .map { it.await() }
+    }
+
+    /** Enriches WAGs with a Wikipedia (Commons) portrait where one exists. */
+    suspend fun enrichWags(wags: List<Wag>): List<Wag> = coroutineScope {
+        wags
+            .map { w ->
+                async {
+                    val img = WikiParser.parseImage(remote.wikipediaImage(w.wiki.ifBlank { w.name }))
+                    if (img != null) w.copy(imageUrl = img) else w
                 }
             }
             .map { it.await() }

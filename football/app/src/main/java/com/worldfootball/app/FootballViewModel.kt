@@ -8,6 +8,7 @@ import com.worldfootball.app.data.model.Match
 import com.worldfootball.app.data.model.NewsCategory
 import com.worldfootball.app.data.model.NewsItem
 import com.worldfootball.app.data.model.Player
+import com.worldfootball.app.data.model.Wag
 import com.worldfootball.app.data.model.WeatherNow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +23,7 @@ data class FootballUiState(
     val weather: List<WeatherNow> = emptyList(),
     val legends: List<Player> = StaticData.legends,
     val youngGuns: List<Player> = StaticData.youngGuns,
+    val wags: List<Wag> = StaticData.wags,
     val lastError: String? = null
 ) {
     fun newsFor(category: NewsCategory): List<NewsItem> =
@@ -52,6 +54,8 @@ class FootballViewModel(
                 .getOrDefault(StaticData.legends)
             val youngGuns = runCatching { repository.enrichPlayers(StaticData.youngGuns) }
                 .getOrDefault(StaticData.youngGuns)
+            val wags = runCatching { repository.enrichWags(StaticData.wags) }
+                .getOrDefault(StaticData.wags)
             val nothing = news.isEmpty() && results.isEmpty() && fixtures.isEmpty() && weather.isEmpty()
             _state.value = FootballUiState(
                 loading = false,
@@ -61,6 +65,7 @@ class FootballViewModel(
                 weather = weather,
                 legends = legends,
                 youngGuns = youngGuns,
+                wags = wags,
                 lastError = if (nothing) "Couldn't reach live feeds. Pull to retry." else null
             )
         }

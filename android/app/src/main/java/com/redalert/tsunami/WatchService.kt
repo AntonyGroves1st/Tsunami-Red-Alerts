@@ -55,7 +55,8 @@ class WatchService : Service() {
 
             val snapshot = DataRepository.fetchAll(station)
             val assessment = AlertEngine.assess(
-                region, snapshot.quakes, snapshot.tsunamiAlerts, snapshot.waterReadings, null
+                region, snapshot.quakes, snapshot.tsunamiAlerts,
+                snapshot.waterReadings, null, snapshot.buoys
             )
 
             updateStatus("Level: ${assessment.level.label} • ${region.label}")

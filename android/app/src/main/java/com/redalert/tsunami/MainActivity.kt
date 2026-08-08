@@ -43,7 +43,10 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private var refreshing = false
     private var watchRunning = false
     private var overlayPulse: ObjectAnimator? = null
+    private var screenFlash: ObjectAnimator? = null
     private var lastShownLevel = AlertLevel.GREEN
+    private lateinit var alarmSiren: AlarmSiren
+    private var alarmVibrator: Vibrator? = null
 
     companion object {
         const val EXTRA_TEST_ALERT = "test_alert"
@@ -97,6 +100,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         }
         binding.watchButton.setOnClickListener { toggleWatchService() }
         binding.dismissOverlayButton.setOnClickListener { hideRedOverlay() }
+
+        alarmSiren = AlarmSiren(this)
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         pressureSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_PRESSURE)
@@ -167,7 +172,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                 val snapshot = DataRepository.fetchAll(station)
                 val assessment = AlertEngine.assess(
                     region, snapshot.quakes, snapshot.tsunamiAlerts,
-                    snapshot.waterReadings, pressureTrendHpaPerHr()
+                    snapshot.waterReadings, pressureTrendHpaPerHr(), snapshot.buoys
                 )
                 render(region, snapshot)
                 showAssessment(assessment, isTest = false)
@@ -196,6 +201,30 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                 val ago = DateUtils.getRelativeTimeSpanString(q.timeMs)
                 String.format(Locale.US, "%sM%.1f  %s\n     %s • depth %.0f km", marker, q.magnitude, q.place, ago, q.depthKm)
             }
+
+        val buoys = snapshot.buoys
+        binding.buoysText.text = if (buoys.isEmpty()) {
+            getString(R.string.no_buoys)
+        } else {
+            val inZone = buoys.filter { region.contains(it.lat, it.lon) }
+            val topSeas = inZone.filter { it.waveHeightM != null }
+                .sortedByDescending { it.waveHeightM!! }.take(5)
+            val minPressure = inZone.filter { it.pressureHpa != null }
+                .minByOrNull { it.pressureHpa!! }
+            buildString {
+                append("Buoys reporting worldwide: ${buoys.size}\n")
+                append("In watch zone: ${inZone.size}")
+                minPressure?.let {
+                    append(String.format(Locale.US, "\nLowest pressure in zone: %.0f hPa @ buoy %s", it.pressureHpa, it.id))
+                }
+                if (topSeas.isNotEmpty()) {
+                    append("\n\nHighest seas in zone:")
+                    for (b in topSeas) {
+                        append(String.format(Locale.US, "\n  %s  %.1f m  (%.1f, %.1f)", b.id, b.waveHeightM, b.lat, b.lon))
+                    }
+                }
+            }
+        }
 
         val readings = snapshot.waterReadings
         binding.waterText.text = if (readings.isEmpty()) {
@@ -241,15 +270,16 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             (isTest || lastShownLevel != AlertLevel.RED)
         if (escalatedToRed) {
             showRedOverlay(assessment)
-            vibrateAlarm()
             Notifier.fireThreatNotification(this, assessment)
         }
         if (!isTest) lastShownLevel = assessment.level
     }
 
+    /** Full alarm experience: overlay + flashing screen + looping siren + looping vibration. */
     private fun showRedOverlay(assessment: Assessment) {
         binding.overlayReasons.text = assessment.reasons.joinToString("\n")
         binding.redOverlay.visibility = View.VISIBLE
+
         overlayPulse?.cancel()
         overlayPulse = ObjectAnimator.ofFloat(binding.overlayTitle, View.ALPHA, 1f, 0.25f).apply {
             duration = 450
@@ -257,23 +287,46 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             repeatCount = ValueAnimator.INFINITE
             start()
         }
+
+        screenFlash?.cancel()
+        screenFlash = ObjectAnimator.ofFloat(binding.flashView, View.ALPHA, 0f, 0.5f).apply {
+            duration = 300
+            repeatMode = ValueAnimator.REVERSE
+            repeatCount = ValueAnimator.INFINITE
+            start()
+        }
+
+        alarmSiren.start()
+        startAlarmVibration()
     }
 
     private fun hideRedOverlay() {
         overlayPulse?.cancel()
+        screenFlash?.cancel()
+        binding.flashView.alpha = 0f
         binding.redOverlay.visibility = View.GONE
+        alarmSiren.stop()
+        alarmVibrator?.cancel()
+        alarmVibrator = null
     }
 
-    private fun vibrateAlarm() {
+    /** Repeating vibration pattern that loops in step with the siren until dismissed. */
+    private fun startAlarmVibration() {
         val vibrator: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             (getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
         } else {
             @Suppress("DEPRECATION")
             getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         }
+        alarmVibrator = vibrator
         vibrator.vibrate(
-            VibrationEffect.createWaveform(longArrayOf(0, 500, 200, 500, 200, 900), -1)
+            VibrationEffect.createWaveform(longArrayOf(0, 500, 200, 500, 200, 600), 0)
         )
+    }
+
+    override fun onDestroy() {
+        hideRedOverlay()
+        super.onDestroy()
     }
 
     private fun toggleWatchService() {

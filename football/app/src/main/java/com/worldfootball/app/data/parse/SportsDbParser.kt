@@ -50,6 +50,18 @@ object SportsDbParser {
         }
     }
 
+    /** Returns the best portrait (cutout preferred, then thumb) from a searchplayers response. */
+    fun parsePlayerImage(json: String): String? {
+        if (json.isBlank()) return null
+        return try {
+            val arr = JSONObject(json).optJSONArray("player") ?: return null
+            val p = arr.optJSONObject(0) ?: return null
+            p.strOrNull("strCutout") ?: p.strOrNull("strThumb") ?: p.strOrNull("strRender")
+        } catch (t: Throwable) {
+            null
+        }
+    }
+
     private fun parseTimestamp(raw: String?): Long? {
         if (raw.isNullOrBlank()) return null
         val cleaned = raw.substringBefore("+").substringBefore(".").trim()

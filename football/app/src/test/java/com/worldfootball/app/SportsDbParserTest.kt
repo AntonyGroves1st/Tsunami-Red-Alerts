@@ -58,4 +58,24 @@ class SportsDbParserTest {
         assertTrue(SportsDbParser.parseEvents("").isEmpty())
         assertTrue(SportsDbParser.parseEvents("garbage").isEmpty())
     }
+
+    @Test
+    fun `parses player portrait preferring cutout`() {
+        val json = """
+            {"player":[{"strPlayer":"Lionel Messi",
+              "strThumb":"https://img/thumb.jpg",
+              "strCutout":"https://img/cutout.png"}]}
+        """.trimIndent()
+        assertEquals("https://img/cutout.png", SportsDbParser.parsePlayerImage(json))
+    }
+
+    @Test
+    fun `player image falls back to thumb then null`() {
+        assertEquals(
+            "https://img/thumb.jpg",
+            SportsDbParser.parsePlayerImage("{\"player\":[{\"strThumb\":\"https://img/thumb.jpg\"}]}")
+        )
+        assertNull(SportsDbParser.parsePlayerImage("{\"player\":null}"))
+        assertNull(SportsDbParser.parsePlayerImage(""))
+    }
 }

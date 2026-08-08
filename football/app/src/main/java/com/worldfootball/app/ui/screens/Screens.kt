@@ -45,7 +45,7 @@ private fun LoadingList(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun HomeScreen(state: FootballUiState, modifier: Modifier = Modifier) {
+fun HomeScreen(state: FootballUiState, onOpen: (DetailTarget) -> Unit, modifier: Modifier = Modifier) {
     if (state.loading) {
         LoadingList(modifier); return
     }
@@ -62,18 +62,18 @@ fun HomeScreen(state: FootballUiState, modifier: Modifier = Modifier) {
             item {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     itemsIndexed(state.breaking) { i, news ->
-                        NewsCard(news, breaking = i == 0, modifier = Modifier.width(300.dp))
+                        NewsCard(news, breaking = i == 0, onClick = { onOpen(DetailTarget.NewsDetail(news)) }, modifier = Modifier.width(300.dp))
                     }
                 }
             }
         }
         if (state.results.isNotEmpty()) {
             item { SectionTitle("Latest Results") }
-            items(state.results.take(6)) { MatchCard(it) }
+            items(state.results.take(6)) { m -> MatchCard(m, onClick = { onOpen(DetailTarget.MatchDetail(m)) }) }
         }
         if (state.fixtures.isNotEmpty()) {
             item { SectionTitle("Upcoming Fixtures") }
-            items(state.fixtures.take(8)) { MatchCard(it) }
+            items(state.fixtures.take(8)) { m -> MatchCard(m, onClick = { onOpen(DetailTarget.MatchDetail(m)) }) }
         }
         if (state.breaking.isEmpty() && state.results.isEmpty() && state.fixtures.isEmpty()) {
             item { EmptyHint("No live data yet — tap refresh to pull the latest feeds.") }
@@ -82,7 +82,7 @@ fun HomeScreen(state: FootballUiState, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun NewsScreen(state: FootballUiState, category: NewsCategory, emptyText: String, modifier: Modifier = Modifier) {
+fun NewsScreen(state: FootballUiState, category: NewsCategory, emptyText: String, onOpen: (DetailTarget) -> Unit, modifier: Modifier = Modifier) {
     if (state.loading) {
         LoadingList(modifier); return
     }
@@ -95,12 +95,12 @@ fun NewsScreen(state: FootballUiState, category: NewsCategory, emptyText: String
         contentPadding = listPadding,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(items) { NewsCard(it) }
+        items(items) { n -> NewsCard(n, onClick = { onOpen(DetailTarget.NewsDetail(n)) }) }
     }
 }
 
 @Composable
-fun WeatherScreen(state: FootballUiState, modifier: Modifier = Modifier) {
+fun WeatherScreen(state: FootballUiState, onOpen: (DetailTarget) -> Unit, modifier: Modifier = Modifier) {
     if (state.loading) {
         LoadingList(modifier); return
     }
@@ -120,12 +120,12 @@ fun WeatherScreen(state: FootballUiState, modifier: Modifier = Modifier) {
             )
             Spacer(Modifier.height(4.dp))
         }
-        items(state.weather) { WeatherCard(it) }
+        items(state.weather) { w -> WeatherCard(w, onClick = { onOpen(DetailTarget.WeatherDetail(w)) }) }
     }
 }
 
 @Composable
-fun ResultsScreen(state: FootballUiState, modifier: Modifier = Modifier) {
+fun ResultsScreen(state: FootballUiState, onOpen: (DetailTarget) -> Unit, modifier: Modifier = Modifier) {
     if (state.loading) {
         LoadingList(modifier); return
     }
@@ -137,12 +137,12 @@ fun ResultsScreen(state: FootballUiState, modifier: Modifier = Modifier) {
         contentPadding = listPadding,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(state.results) { MatchCard(it) }
+        items(state.results) { m -> MatchCard(m, onClick = { onOpen(DetailTarget.MatchDetail(m)) }) }
     }
 }
 
 @Composable
-fun FixturesScreen(state: FootballUiState, modifier: Modifier = Modifier) {
+fun FixturesScreen(state: FootballUiState, onOpen: (DetailTarget) -> Unit, modifier: Modifier = Modifier) {
     if (state.loading) {
         LoadingList(modifier); return
     }
@@ -154,62 +154,62 @@ fun FixturesScreen(state: FootballUiState, modifier: Modifier = Modifier) {
         contentPadding = listPadding,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(state.fixtures) { MatchCard(it) }
+        items(state.fixtures) { m -> MatchCard(m, onClick = { onOpen(DetailTarget.MatchDetail(m)) }) }
     }
 }
 
 @Composable
-fun LegendsScreen(modifier: Modifier = Modifier) {
+fun LegendsScreen(state: FootballUiState, onOpen: (DetailTarget) -> Unit, modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = listPadding,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            Text("The greatest to ever lace up — an all-time XI of icons.", color = TextDim, style = MaterialTheme.typography.bodyMedium)
+            Text("The greatest to ever lace up — tap any icon for the full story.", color = TextDim, style = MaterialTheme.typography.bodyMedium)
         }
-        itemsIndexed(StaticData.legends) { i, p -> PlayerCard(p, rank = i + 1) }
+        itemsIndexed(state.legends) { i, p -> PlayerCard(p, rank = i + 1, onClick = { onOpen(DetailTarget.PlayerDetail(p, i + 1, "Legend")) }) }
     }
 }
 
 @Composable
-fun YoungGunsScreen(modifier: Modifier = Modifier) {
+fun YoungGunsScreen(state: FootballUiState, onOpen: (DetailTarget) -> Unit, modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = listPadding,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            Text("Youth players tipped to define the next decade.", color = TextDim, style = MaterialTheme.typography.bodyMedium)
+            Text("Youth players tipped to define the next decade — tap for scouting notes.", color = TextDim, style = MaterialTheme.typography.bodyMedium)
         }
-        itemsIndexed(StaticData.youngGuns) { i, p -> PlayerCard(p, rank = i + 1) }
+        itemsIndexed(state.youngGuns) { i, p -> PlayerCard(p, rank = i + 1, onClick = { onOpen(DetailTarget.PlayerDetail(p, i + 1, "Young Gun")) }) }
     }
 }
 
 @Composable
-fun WagsScreen(modifier: Modifier = Modifier) {
+fun WagsScreen(onOpen: (DetailTarget) -> Unit, modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = listPadding,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            Text("Ranked for looks and brains — a light-hearted fan board.", color = TextDim, style = MaterialTheme.typography.bodyMedium)
+            Text("Ranked for looks and brains — tap any profile for more.", color = TextDim, style = MaterialTheme.typography.bodyMedium)
         }
-        itemsIndexed(StaticData.wags) { i, w -> WagCard(w, rank = i + 1) }
+        itemsIndexed(StaticData.wags) { i, w -> WagCard(w, rank = i + 1, onClick = { onOpen(DetailTarget.WagDetail(w, i + 1)) }) }
     }
 }
 
 @Composable
-fun StatsScreen(modifier: Modifier = Modifier) {
+fun StatsScreen(onOpen: (DetailTarget) -> Unit, modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = listPadding,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            Text("Numbers that tell football's biggest stories.", color = TextDim, style = MaterialTheme.typography.bodyMedium)
+            Text("Numbers that tell football's biggest stories — tap to dig in.", color = TextDim, style = MaterialTheme.typography.bodyMedium)
         }
-        items(StaticData.bigStats) { BigStatCard(it) }
+        items(StaticData.bigStats) { s -> BigStatCard(s, onClick = { onOpen(DetailTarget.StatDetail(s)) }) }
     }
 }

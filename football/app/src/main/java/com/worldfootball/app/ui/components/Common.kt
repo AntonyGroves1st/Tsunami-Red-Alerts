@@ -46,23 +46,23 @@ import com.worldfootball.app.ui.theme.TextHigh
 fun GradientCard(
     modifier: Modifier = Modifier,
     accent: Color = NeonLime,
+    onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(22.dp))
-            .background(
-                Brush.verticalGradient(listOf(CardTop, CardBottom))
-            )
-            .border(
-                width = 1.dp,
-                brush = Brush.verticalGradient(
-                    listOf(accent.copy(alpha = 0.55f), Color.Transparent)
-                ),
-                shape = RoundedCornerShape(22.dp)
-            )
-            .padding(16.dp)
-    ) { content() }
+    val base = modifier
+        .clip(RoundedCornerShape(22.dp))
+        .background(
+            Brush.verticalGradient(listOf(CardTop, CardBottom))
+        )
+        .border(
+            width = 1.dp,
+            brush = Brush.verticalGradient(
+                listOf(accent.copy(alpha = 0.55f), Color.Transparent)
+            ),
+            shape = RoundedCornerShape(22.dp)
+        )
+    val clickable = if (onClick != null) base.clickable(onClick = onClick) else base
+    Box(modifier = clickable.padding(16.dp)) { content() }
 }
 
 /** Pulsing capsule for "BREAKING" / "LIVE" style flags. */

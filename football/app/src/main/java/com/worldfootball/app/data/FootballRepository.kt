@@ -2,6 +2,7 @@ package com.worldfootball.app.data
 
 import com.worldfootball.app.data.model.Match
 import com.worldfootball.app.data.model.NewsItem
+import com.worldfootball.app.data.model.Player
 import com.worldfootball.app.data.model.WeatherNow
 import com.worldfootball.app.data.parse.RssParser
 import com.worldfootball.app.data.parse.SportsDbParser
@@ -13,10 +14,25 @@ import kotlinx.coroutines.coroutineScope
 class FootballRepository(
     private val remote: RemoteSources = RemoteSources()
 ) {
-    suspend fun loadNews(): List<NewsItem> {
-        val xml = remote.bbcFootball()
-        return RssParser.parse(xml, "BBC Sport")
+    /** Fetches all free news feeds in parallel, merges, de-duplicates and sorts. */
+    suspend fun loadNews(): List<NewsItem> = coroutineScope {
+        RemoteSources.NEWS_FEEDS
+            .map { (source, url) -> async { RssParser.parse(remote.feed(url), source) } }
+            .flatMap { it.await() }
+            .distinctBy { it.title.lowercase().trim() }
             .sortedByDescending { it.publishedEpochMs }
+    }
+
+    /** Enriches curated players with a real portrait from TheSportsDB (best-effort). */
+    suspend fun enrichPlayers(players: List<Player>): List<Player> = coroutineScope {
+        players
+            .map { p ->
+                async {
+                    val img = SportsDbParser.parsePlayerImage(remote.searchPlayer(p.name))
+                    if (img != null) p.copy(imageUrl = img) else p
+                }
+            }
+            .map { it.await() }
     }
 
     suspend fun loadResults(): List<Match> = coroutineScope {

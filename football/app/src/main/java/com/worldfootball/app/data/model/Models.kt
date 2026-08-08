@@ -91,7 +91,12 @@ data class Player(
     val rating: Int,
     val headline: String,
     val stats: List<StatLine>,
-    val accent: Long
+    val accent: Long,
+    val imageUrl: String? = null,
+    val era: String = "",
+    val bio: String = "",
+    val honours: List<String> = emptyList(),
+    val traits: List<String> = emptyList()
 )
 
 data class StatLine(val label: String, val value: String)
@@ -103,7 +108,10 @@ data class Wag(
     val brains: String,
     val looksScore: Int,
     val brainsScore: Int,
-    val accent: Long
+    val accent: Long,
+    val nationality: String = "",
+    val profession: String = "",
+    val highlights: List<String> = emptyList()
 ) {
     val overall: Int get() = ((looksScore + brainsScore) / 2.0).toInt()
 }
@@ -113,7 +121,8 @@ data class BigStat(
     val value: String,
     val detail: String,
     val progress: Float,
-    val accent: Long
+    val accent: Long,
+    val facts: List<String> = emptyList()
 )
 
 /** A famous venue used for the match-day weather board. */

@@ -1,9 +1,17 @@
 package com.worldfootball.app
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -30,15 +38,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.worldfootball.app.data.model.NewsCategory
 import com.worldfootball.app.ui.components.BrandHeader
 import com.worldfootball.app.ui.components.PitchBackground
+import com.worldfootball.app.ui.screens.DetailScreen
+import com.worldfootball.app.ui.screens.DetailTarget
 import com.worldfootball.app.ui.screens.FixturesScreen
 import com.worldfootball.app.ui.screens.HomeScreen
 import com.worldfootball.app.ui.screens.LegendsScreen
@@ -89,6 +103,9 @@ private fun WorldFootballApp() {
     val tabs = WfTab.values()
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    var detail by remember { mutableStateOf<DetailTarget?>(null) }
+    val open: (DetailTarget) -> Unit = { detail = it }
 
     Box(Modifier.fillMaxSize().background(PitchNight)) {
         PitchBackground()
@@ -130,31 +147,54 @@ private fun WorldFootballApp() {
                 modifier = Modifier.fillMaxWidth().weight(1f)
             ) { page ->
                 when (tabs[page]) {
-                    WfTab.HOME -> HomeScreen(state)
-                    WfTab.RESULTS -> ResultsScreen(state)
-                    WfTab.FIXTURES -> FixturesScreen(state)
-                    WfTab.TRANSFERS -> NewsScreen(state, NewsCategory.TRANSFER, "No transfer stories in the feed yet.")
-                    WfTab.INJURIES -> NewsScreen(state, NewsCategory.INJURY, "No injury news right now — good news!")
-                    WfTab.MANAGERS -> NewsScreen(state, NewsCategory.MANAGER, "No manager moves in the feed yet.")
-                    WfTab.WEATHER -> WeatherScreen(state)
-                    WfTab.LEGENDS -> LegendsScreen()
-                    WfTab.YOUNG_GUNS -> YoungGunsScreen()
-                    WfTab.WAGS -> WagsScreen()
-                    WfTab.STATS -> StatsScreen()
-                    WfTab.MEMORIAM -> NewsScreen(state, NewsCategory.MEMORIAM, "No memoriam stories in the feed.")
+                    WfTab.HOME -> HomeScreen(state, open)
+                    WfTab.RESULTS -> ResultsScreen(state, open)
+                    WfTab.FIXTURES -> FixturesScreen(state, open)
+                    WfTab.TRANSFERS -> NewsScreen(state, NewsCategory.TRANSFER, "No transfer stories in the feed yet.", open)
+                    WfTab.INJURIES -> NewsScreen(state, NewsCategory.INJURY, "No injury news right now — good news!", open)
+                    WfTab.MANAGERS -> NewsScreen(state, NewsCategory.MANAGER, "No manager moves in the feed yet.", open)
+                    WfTab.WEATHER -> WeatherScreen(state, open)
+                    WfTab.LEGENDS -> LegendsScreen(state, open)
+                    WfTab.YOUNG_GUNS -> YoungGunsScreen(state, open)
+                    WfTab.WAGS -> WagsScreen(open)
+                    WfTab.STATS -> StatsScreen(open)
+                    WfTab.MEMORIAM -> NewsScreen(state, NewsCategory.MEMORIAM, "No memoriam stories in the feed.", open)
                 }
             }
         }
 
-        FloatingActionButton(
-            onClick = { vm.refresh() },
-            containerColor = NeonLime,
-            contentColor = PitchNight,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(20.dp)
+        if (detail == null) {
+            FloatingActionButton(
+                onClick = { vm.refresh() },
+                containerColor = NeonLime,
+                contentColor = PitchNight,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(20.dp)
+            ) {
+                Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
+            }
+        }
+
+        AnimatedVisibility(
+            visible = detail != null,
+            enter = fadeIn() + slideInVertically(initialOffsetY = { it / 5 }),
+            exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 5 })
         ) {
-            Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
+            val current = detail
+            if (current != null) {
+                DetailScreen(
+                    target = current,
+                    onClose = { detail = null },
+                    onOpenLink = { url ->
+                        runCatching {
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                        }
+                    }
+                )
+            }
         }
     }
+
+    BackHandler(enabled = detail != null) { detail = null }
 }

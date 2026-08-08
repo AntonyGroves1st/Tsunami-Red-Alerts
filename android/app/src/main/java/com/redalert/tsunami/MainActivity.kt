@@ -45,6 +45,10 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private var overlayPulse: ObjectAnimator? = null
     private var lastShownLevel = AlertLevel.GREEN
 
+    companion object {
+        const val EXTRA_TEST_ALERT = "test_alert"
+    }
+
     private val notifPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
@@ -107,6 +111,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                     delay(60_000)
                 }
             }
+        }
+
+        // Drill support: `adb shell am start ... --ez test_alert true` fires the alarm.
+        if (intent.getBooleanExtra(EXTRA_TEST_ALERT, false)) {
+            binding.testButton.postDelayed({ binding.testButton.performClick() }, 1500)
         }
     }
 

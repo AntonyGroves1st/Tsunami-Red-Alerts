@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg">
+    android:background="@drawable/bg_app">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -22,7 +23,11 @@
                 android:textColor="@color/accent"
                 android:textSize="26sp"
                 android:textStyle="bold"
-                android:letterSpacing="0.08" />
+                android:letterSpacing="0.08"
+                android:shadowColor="@color/accent_glow"
+                android:shadowRadius="18"
+                android:shadowDx="0"
+                android:shadowDy="0" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -39,7 +44,11 @@
                 android:orientation="vertical"
                 android:background="@drawable/banner_green"
                 android:padding="18dp"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="14dp"
+                android:elevation="10dp"
+                android:outlineSpotShadowColor="@color/accent"
+                android:outlineAmbientShadowColor="@color/accent"
+                tools:targetApi="p">
 
                 <TextView
                     android:id="@+id/levelText"
@@ -48,7 +57,11 @@
                     android:text="@string/app_name"
                     android:textColor="@color/text_primary"
                     android:textSize="32sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:shadowColor="@color/white_glow"
+                    android:shadowRadius="14"
+                    android:shadowDx="0"
+                    android:shadowDy="0" />
 
                 <TextView
                     android:id="@+id/reasonsText"
@@ -74,7 +87,8 @@
                 android:orientation="vertical"
                 android:background="@drawable/card_bg"
                 android:padding="14dp"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="14dp"
+                android:elevation="6dp">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -110,21 +124,30 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginEnd="6dp"
-                        android:text="@string/refresh" />
+                        android:text="@string/refresh"
+                        android:elevation="8dp"
+                        android:outlineSpotShadowColor="@color/accent"
+                        tools:targetApi="p" />
 
                     <Button
                         android:id="@+id/watchButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/start_watch" />
+                        android:text="@string/start_watch"
+                        android:elevation="8dp"
+                        android:outlineSpotShadowColor="@color/accent"
+                        tools:targetApi="p" />
                 </LinearLayout>
 
                 <Button
                     android:id="@+id/testButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/test_alert" />
+                    android:text="@string/test_alert"
+                    android:elevation="8dp"
+                    android:outlineSpotShadowColor="@color/accent"
+                    tools:targetApi="p" />
 
                 <TextView
                     android:id="@+id/errorsText"
@@ -152,7 +175,8 @@
                 android:padding="14dp"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="14dp"
+                android:elevation="6dp" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -172,7 +196,8 @@
                 android:textColor="@color/text_primary"
                 android:textSize="13sp"
                 android:fontFamily="monospace"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="14dp"
+                android:elevation="6dp" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -191,7 +216,8 @@
                 android:padding="14dp"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="14dp"
+                android:elevation="6dp" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -210,7 +236,8 @@
                 android:padding="14dp"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
-                android:layout_marginBottom="24dp" />
+                android:layout_marginBottom="24dp"
+                android:elevation="6dp" />
         </LinearLayout>
     </ScrollView>
 
@@ -218,7 +245,7 @@
         android:id="@+id/redOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/red_overlay"
+        android:background="@drawable/red_overlay_bg"
         android:visibility="gone"
         android:clickable="true"
         android:focusable="true">
@@ -239,7 +266,11 @@
                 android:textColor="@color/text_primary"
                 android:textSize="34sp"
                 android:textStyle="bold"
-                android:gravity="center" />
+                android:gravity="center"
+                android:shadowColor="@color/white_glow"
+                android:shadowRadius="20"
+                android:shadowDx="0"
+                android:shadowDy="0" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -249,7 +280,11 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:gravity="center"
-                android:layout_marginTop="12dp" />
+                android:layout_marginTop="12dp"
+                android:shadowColor="@color/white_glow"
+                android:shadowRadius="10"
+                android:shadowDx="0"
+                android:shadowDy="0" />
 
             <TextView
                 android:id="@+id/overlayReasons"

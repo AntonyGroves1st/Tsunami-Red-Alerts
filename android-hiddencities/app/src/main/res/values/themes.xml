@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.HiddenCities" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/ember</item>
+        <item name="colorOnPrimary">@color/cave_black</item>
+        <item name="colorPrimaryContainer">@color/ember_dark</item>
+        <item name="colorOnPrimaryContainer">@color/text_primary</item>
+        <item name="colorSecondary">@color/torch</item>
+        <item name="colorOnSecondary">@color/cave_black</item>
+        <item name="android:colorBackground">@color/cave_black</item>
+        <item name="colorSurface">@color/cave_surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorSurfaceVariant">@color/cave_surface_alt</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="android:statusBarColor">@color/cave_black</item>
+        <item name="android:navigationBarColor">@color/cave_black</item>
+    </style>
+</resources>

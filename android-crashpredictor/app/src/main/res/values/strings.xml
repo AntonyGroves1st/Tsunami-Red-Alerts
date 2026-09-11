@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Market Crash Predictor</string>
+    <string name="wordmark">CRASH ORACLE</string>
+    <string name="tagline">Global systemic-risk sentinel · markets, fortunes &amp; the bunker trigger</string>
+
+    <string name="crash_index">Crash Index</string>
+    <string name="section_markets">Market pulse — all asset classes</string>
+    <string name="section_signals">Stress signals driving the index</string>
+    <string name="section_elite">Elite watch — top 50 fortunes</string>
+    <string name="section_bunker">Bunker trigger — New Zealand inbound</string>
+    <string name="section_leaders">World leaders — early-bird board</string>
+
+    <string name="refresh">Refresh sweep</string>
+    <string name="test_alert">Test crash alert</string>
+    <string name="start_watch">Start 24/7 sentinel</string>
+    <string name="stop_watch">Stop sentinel</string>
+    <string name="dismiss_alert">Acknowledge — stand down</string>
+
+    <string name="overlay_title">GLOBAL CRASH ALERT</string>
+    <string name="updated_at">Last sweep %1$s</string>
+    <string name="fetching">Sweeping global markets…</string>
+    <string name="show_all_fortunes">View the full fifty</string>
+    <string name="hide_fortunes">Fold the list away</string>
+
+    <string name="disclaimer">Market data: Stooq &amp; CoinGecko public feeds. The billionaire, flight and leader boards are heuristic indicators derived from live market stress — an early-warning metaphor, not surveillance of real people. Nothing here is financial advice.</string>
+</resources>

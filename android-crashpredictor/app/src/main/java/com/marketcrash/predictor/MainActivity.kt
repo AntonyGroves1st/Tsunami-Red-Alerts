@@ -231,6 +231,17 @@ class MainActivity : AppCompatActivity() {
         binding.scoreText.text = assessment.score.toString()
         binding.gauge.value = assessment.score
         binding.levelText.text = assessment.level.label
+        binding.levelText.setTextColor(
+            ContextCompat.getColor(
+                this,
+                when (assessment.level) {
+                    CrashLevel.SERENE -> R.color.emerald_soft
+                    CrashLevel.WATCH -> R.color.gold_soft
+                    CrashLevel.WARNING -> R.color.ember
+                    CrashLevel.CRASH -> R.color.crimson
+                }
+            )
+        )
         binding.levelBanner.setBackgroundResource(
             when (assessment.level) {
                 CrashLevel.SERENE -> R.drawable.banner_serene

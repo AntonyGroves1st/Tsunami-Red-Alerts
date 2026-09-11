@@ -348,13 +348,54 @@
                 android:textSize="11sp"
                 android:visibility="gone" />
 
+            <!-- Footer -->
+            <View
+                android:layout_width="60dp"
+                android:layout_height="1dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="22dp"
+                android:background="@color/gold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="14dp"
+                android:text="@string/footer_brand"
+                android:textColor="@color/champagne"
+                android:textSize="13sp"
+                android:letterSpacing="0.34"
+                android:fontFamily="serif" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="3dp"
+                android:text="@string/footer_motto"
+                android:textColor="@color/text_secondary"
+                android:textSize="10.5sp"
+                android:fontFamily="serif"
+                android:textStyle="italic" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:text="@string/footer_meta"
+                android:textColor="@color/text_faint"
+                android:textSize="9.5sp"
+                android:letterSpacing="0.06" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
                 android:text="@string/disclaimer"
                 android:textColor="@color/text_faint"
-                android:textSize="9.5sp"
+                android:textSize="9sp"
                 android:lineSpacingExtra="2dp" />
         </LinearLayout>
     </ScrollView>

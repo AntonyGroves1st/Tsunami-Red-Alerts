@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Midnight private-bank palette -->
+    <color name="ink">#080B14</color>
+    <color name="midnight">#0D1220</color>
+    <color name="navy">#121A2E</color>
+    <color name="navy_card">#161F36</color>
+    <color name="navy_raised">#1C2742</color>
+    <color name="hairline">#26314E</color>
+
+    <!-- Gilded accents -->
+    <color name="gold">#D4AF37</color>
+    <color name="gold_soft">#E7CE8C</color>
+    <color name="champagne">#F5E6C4</color>
+
+    <!-- Signal colours -->
+    <color name="emerald">#2E9E6B</color>
+    <color name="emerald_soft">#59C08A</color>
+    <color name="amber">#E0A83C</color>
+    <color name="ember">#E08A3C</color>
+    <color name="crimson">#C63B3B</color>
+    <color name="crimson_deep">#8F1F1F</color>
+
+    <!-- Text -->
+    <color name="text_primary">#EFF2FA</color>
+    <color name="text_secondary">#9AA5C0</color>
+    <color name="text_faint">#5A6378</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+</resources>

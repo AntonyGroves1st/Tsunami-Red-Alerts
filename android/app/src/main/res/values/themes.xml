@@ -21,6 +21,13 @@
         <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
 
+    <style name="FooterIndicator">
+        <item name="android:layout_width">22dp</item>
+        <item name="android:layout_height">3dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:background">@drawable/footer_indicator</item>
+    </style>
+
     <style name="FooterGlyph">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

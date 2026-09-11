@@ -1,9 +1,12 @@
 package com.redalert.tsunami
 
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -19,8 +22,12 @@ import org.robolectric.annotation.Config
 @Config(sdk = [30])
 class FooterMenuTest {
 
+    // Child order per footer item is [indicator, glyph, label].
     private fun glyphColor(item: LinearLayout) =
-        (item.getChildAt(0) as TextView).currentTextColor
+        (item.getChildAt(1) as TextView).currentTextColor
+
+    private fun indicatorVisible(item: LinearLayout) =
+        item.getChildAt(0).visibility == View.VISIBLE
 
     @Test
     fun footerStartsWithStatusSelected() {
@@ -30,6 +37,8 @@ class FooterMenuTest {
 
         assertEquals(scan, glyphColor(activity.findViewById(R.id.footerStatus)))
         assertEquals(muted, glyphColor(activity.findViewById(R.id.footerQuakes)))
+        assertTrue(indicatorVisible(activity.findViewById(R.id.footerStatus)))
+        assertFalse(indicatorVisible(activity.findViewById(R.id.footerQuakes)))
     }
 
     @Test
@@ -42,5 +51,7 @@ class FooterMenuTest {
 
         assertEquals(scan, glyphColor(activity.findViewById(R.id.footerWater)))
         assertEquals(muted, glyphColor(activity.findViewById(R.id.footerStatus)))
+        assertTrue(indicatorVisible(activity.findViewById(R.id.footerWater)))
+        assertFalse(indicatorVisible(activity.findViewById(R.id.footerStatus)))
     }
 }

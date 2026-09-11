@@ -332,6 +332,8 @@
                 android:id="@+id/footerStatus"
                 style="@style/FooterItem">
 
+                <View style="@style/FooterIndicator" />
+
                 <TextView style="@style/FooterGlyph" android:text="\u25C9" />
 
                 <TextView style="@style/FooterLabel" android:text="@string/footer_status" />
@@ -340,6 +342,8 @@
             <LinearLayout
                 android:id="@+id/footerQuakes"
                 style="@style/FooterItem">
+
+                <View style="@style/FooterIndicator" />
 
                 <TextView style="@style/FooterGlyph" android:text="\u25B2" />
 
@@ -350,6 +354,8 @@
                 android:id="@+id/footerBuoys"
                 style="@style/FooterItem">
 
+                <View style="@style/FooterIndicator" />
+
                 <TextView style="@style/FooterGlyph" android:text="\u25CE" />
 
                 <TextView style="@style/FooterLabel" android:text="@string/footer_buoys" />
@@ -359,6 +365,8 @@
                 android:id="@+id/footerWater"
                 style="@style/FooterItem">
 
+                <View style="@style/FooterIndicator" />
+
                 <TextView style="@style/FooterGlyph" android:text="\u2248" />
 
                 <TextView style="@style/FooterLabel" android:text="@string/footer_water" />
@@ -367,6 +375,8 @@
             <LinearLayout
                 android:id="@+id/footerPressure"
                 style="@style/FooterItem">
+
+                <View style="@style/FooterIndicator" />
 
                 <TextView style="@style/FooterGlyph" android:text="\u25D4" />
 

@@ -6,6 +6,7 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Typeface
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -371,7 +372,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         binding.scrollView.smoothScrollTo(0, target.top)
     }
 
-    /** Highlight the active footer item (accent glyph + bright label), mute the rest. */
+    /** Highlight the active footer item: show its indicator bar, accent + bold its
+     * glyph, and brighten its label; mute the rest. Child order per item is
+     * [indicator, glyph, label]. */
     private fun setActiveFooter(index: Int) {
         val items = listOf(
             binding.footerStatus, binding.footerQuakes, binding.footerBuoys,
@@ -379,10 +382,12 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         )
         items.forEachIndexed { i, item ->
             val active = i == index
-            (item.getChildAt(0) as? TextView)?.setTextColor(
-                ContextCompat.getColor(this, if (active) R.color.scan else R.color.text_secondary)
-            )
-            (item.getChildAt(1) as? TextView)?.setTextColor(
+            item.getChildAt(0)?.visibility = if (active) View.VISIBLE else View.INVISIBLE
+            (item.getChildAt(1) as? TextView)?.apply {
+                setTextColor(ContextCompat.getColor(this@MainActivity, if (active) R.color.scan else R.color.text_secondary))
+                setTypeface(null, if (active) Typeface.BOLD else Typeface.NORMAL)
+            }
+            (item.getChildAt(2) as? TextView)?.setTextColor(
                 ContextCompat.getColor(this, if (active) R.color.text_primary else R.color.text_secondary)
             )
         }

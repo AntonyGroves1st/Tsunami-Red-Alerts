@@ -6,36 +6,94 @@
     android:background="@drawable/bg_app">
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
         android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:paddingBottom="96dp">
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/headerBlock"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/title"
-                android:textColor="@color/accent"
-                android:textSize="26sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.08"
-                android:shadowColor="@color/accent_glow"
-                android:shadowRadius="18"
-                android:shadowDx="0"
-                android:shadowDy="0" />
+                android:orientation="vertical"
+                android:background="@drawable/card_bg"
+                android:padding="16dp"
+                android:layout_marginBottom="14dp"
+                android:elevation="6dp">
 
-            <TextView
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title"
+                    android:textColor="@color/accent"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.08"
+                    android:shadowColor="@color/accent_glow"
+                    android:shadowRadius="18"
+                    android:shadowDx="0"
+                    android:shadowDy="0" />
+
+                <View
+                    android:layout_width="64dp"
+                    android:layout_height="3dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/title_accent_bar" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/subtitle"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/scanningIndicator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/subtitle"
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp"
-                android:layout_marginBottom="12dp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/scanning_bg"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="10dp"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone"
+                android:elevation="6dp"
+                android:outlineSpotShadowColor="@color/scan"
+                tools:targetApi="p">
+
+                <View
+                    android:id="@+id/scanningDot"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/scanning_dot" />
+
+                <TextView
+                    android:id="@+id/scanningText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/scanning"
+                    android:textColor="@color/scan_text"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.06"
+                    android:shadowColor="@color/scan_glow"
+                    android:shadowRadius="12"
+                    android:shadowDx="0"
+                    android:shadowDy="0" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/banner"
@@ -179,6 +237,7 @@
                 android:elevation="6dp" />
 
             <TextView
+                android:id="@+id/labelQuakes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/section_quakes"
@@ -200,6 +259,7 @@
                 android:elevation="6dp" />
 
             <TextView
+                android:id="@+id/labelBuoys"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/section_buoys"
@@ -221,6 +281,7 @@
                 android:elevation="6dp" />
 
             <TextView
+                android:id="@+id/labelWater"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/section_water"
@@ -241,6 +302,7 @@
                 android:elevation="6dp" />
 
             <TextView
+                android:id="@+id/labelPressure"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/section_pressure"
@@ -261,6 +323,84 @@
                 android:elevation="6dp" />
         </LinearLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/footerMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:background="@color/bg_deep"
+        android:elevation="16dp">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/card_edge" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="6dp"
+            android:paddingBottom="8dp">
+
+            <LinearLayout
+                android:id="@+id/footerStatus"
+                style="@style/FooterItem">
+
+                <View style="@style/FooterIndicator" />
+
+                <TextView style="@style/FooterGlyph" android:text="\u25C9" />
+
+                <TextView style="@style/FooterLabel" android:text="@string/footer_status" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/footerQuakes"
+                style="@style/FooterItem">
+
+                <View style="@style/FooterIndicator" />
+
+                <TextView style="@style/FooterGlyph" android:text="\u25B2" />
+
+                <TextView style="@style/FooterLabel" android:text="@string/footer_quakes" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/footerBuoys"
+                style="@style/FooterItem">
+
+                <View style="@style/FooterIndicator" />
+
+                <TextView style="@style/FooterGlyph" android:text="\u25CE" />
+
+                <TextView style="@style/FooterLabel" android:text="@string/footer_buoys" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/footerWater"
+                style="@style/FooterItem">
+
+                <View style="@style/FooterIndicator" />
+
+                <TextView style="@style/FooterGlyph" android:text="\u2248" />
+
+                <TextView style="@style/FooterLabel" android:text="@string/footer_water" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/footerPressure"
+                style="@style/FooterItem">
+
+                <View style="@style/FooterIndicator" />
+
+                <TextView style="@style/FooterGlyph" android:text="\u25D4" />
+
+                <TextView style="@style/FooterLabel" android:text="@string/footer_pressure" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/redOverlay"

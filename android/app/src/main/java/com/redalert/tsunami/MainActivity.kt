@@ -6,6 +6,7 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Typeface
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -19,6 +20,7 @@ import android.text.format.DateUtils
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -44,6 +46,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private var watchRunning = false
     private var overlayPulse: ObjectAnimator? = null
     private var screenFlash: ObjectAnimator? = null
+    private var scanningPulse: ObjectAnimator? = null
+    private var activeFooterIndex = -1
     private var lastShownLevel = AlertLevel.GREEN
     private lateinit var alarmSiren: AlarmSiren
     private var alarmVibrator: Vibrator? = null
@@ -100,6 +104,29 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         }
         binding.watchButton.setOnClickListener { toggleWatchService() }
         binding.dismissOverlayButton.setOnClickListener { hideRedOverlay() }
+
+        binding.footerStatus.setOnClickListener { binding.scrollView.smoothScrollTo(0, 0); setActiveFooter(0) }
+        binding.footerQuakes.setOnClickListener { scrollToSection(binding.labelQuakes); setActiveFooter(1) }
+        binding.footerBuoys.setOnClickListener { scrollToSection(binding.labelBuoys); setActiveFooter(2) }
+        binding.footerWater.setOnClickListener { scrollToSection(binding.labelWater); setActiveFooter(3) }
+        binding.footerPressure.setOnClickListener { scrollToSection(binding.labelPressure); setActiveFooter(4) }
+
+        // Scroll-spy: highlight the footer item for whichever section is at the top.
+        binding.scrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            val probe = scrollY + (120 * resources.displayMetrics.density).toInt()
+            val tops = intArrayOf(
+                0, binding.labelQuakes.top, binding.labelBuoys.top,
+                binding.labelWater.top, binding.labelPressure.top
+            )
+            var active = 0
+            for (i in tops.indices) if (probe >= tops[i]) active = i
+            setActiveFooter(active)
+        }
+        setActiveFooter(0)
+
+        // Reflect any already-running background watch (e.g. after reopening the app).
+        watchRunning = WatchService.isRunning
+        updateWatchUi()
 
         alarmSiren = AlarmSiren(this)
 
@@ -326,6 +353,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onDestroy() {
         hideRedOverlay()
+        stopScanningPulse()
         super.onDestroy()
     }
 
@@ -337,9 +365,72 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             ContextCompat.startForegroundService(this, Intent(this, WatchService::class.java))
             watchRunning = true
         }
+        updateWatchUi()
+    }
+
+    /** Smooth-scroll the main content so the given section header sits near the top. */
+    private fun scrollToSection(target: View) {
+        binding.scrollView.smoothScrollTo(0, target.top)
+    }
+
+    /** Highlight the active footer item: show its indicator bar, accent + bold its
+     * glyph, and brighten its label; mute the rest. Child order per item is
+     * [indicator, glyph, label]. */
+    private fun setActiveFooter(index: Int) {
+        if (index == activeFooterIndex) return
+        activeFooterIndex = index
+        val items = listOf(
+            binding.footerStatus, binding.footerQuakes, binding.footerBuoys,
+            binding.footerWater, binding.footerPressure
+        )
+        items.forEachIndexed { i, item ->
+            val active = i == index
+            item.getChildAt(0)?.visibility = if (active) View.VISIBLE else View.INVISIBLE
+            (item.getChildAt(1) as? TextView)?.apply {
+                setTextColor(ContextCompat.getColor(this@MainActivity, if (active) R.color.scan else R.color.text_secondary))
+                setTypeface(null, if (active) Typeface.BOLD else Typeface.NORMAL)
+                if (active) {
+                    // Quick pop so the newly selected item feels responsive.
+                    scaleX = 1.25f
+                    scaleY = 1.25f
+                    animate().scaleX(1f).scaleY(1f).setDuration(180).start()
+                }
+            }
+            (item.getChildAt(2) as? TextView)?.setTextColor(
+                ContextCompat.getColor(this, if (active) R.color.text_primary else R.color.text_secondary)
+            )
+        }
+    }
+
+    /** Sync the watch button label and the top "SCANNING" indicator to the watch state. */
+    private fun updateWatchUi() {
         binding.watchButton.text = getString(
             if (watchRunning) R.string.stop_watch else R.string.start_watch
         )
+        if (watchRunning) {
+            binding.scanningIndicator.visibility = View.VISIBLE
+            startScanningPulse()
+        } else {
+            stopScanningPulse()
+            binding.scanningIndicator.visibility = View.GONE
+        }
+    }
+
+    /** Gentle breathing pulse on the scanning dot to signal the watch is live. */
+    private fun startScanningPulse() {
+        if (scanningPulse?.isRunning == true) return
+        scanningPulse = ObjectAnimator.ofFloat(binding.scanningDot, View.ALPHA, 1f, 0.2f).apply {
+            duration = 850
+            repeatMode = ValueAnimator.REVERSE
+            repeatCount = ValueAnimator.INFINITE
+            start()
+        }
+    }
+
+    private fun stopScanningPulse() {
+        scanningPulse?.cancel()
+        scanningPulse = null
+        binding.scanningDot.alpha = 1f
     }
 
     private fun requestNotificationPermissionIfNeeded() {

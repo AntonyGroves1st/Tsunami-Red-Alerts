@@ -16,6 +16,7 @@
     <string name="pressure_waiting">Waiting for first barometer reading…</string>
     <string name="refresh">Refresh now</string>
     <string name="test_alert">Test red alert</string>
+    <string name="scanning">SCANNING · 24/7 watch active</string>
     <string name="start_watch">Start 24/7 watch</string>
     <string name="stop_watch">Stop 24/7 watch</string>
     <string name="station_hint">Tide station: NOAA ID or ioc:code (global)</string>
@@ -23,4 +24,9 @@
     <string name="red_overlay_title">🚨 TSUNAMI RED ALERT 🚨</string>
     <string name="red_overlay_sub">MOVE TO HIGH GROUND — THIS IS NOT A DRILL UNLESS MARKED TEST</string>
     <string name="dismiss">Dismiss</string>
+    <string name="footer_status">Status</string>
+    <string name="footer_quakes">Quakes</string>
+    <string name="footer_buoys">Buoys</string>
+    <string name="footer_water">Water</string>
+    <string name="footer_pressure">Pressure</string>
 </resources>

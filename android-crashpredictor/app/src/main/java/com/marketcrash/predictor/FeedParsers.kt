@@ -6,47 +6,58 @@ import org.json.JSONObject
  * Pure parsing functions for the free market feeds (unit-testable, no Android deps).
  *
  * Sources:
- *  - Stooq CSV quotes (indices, bonds, metals, energy, FX) — no API key needed.
- *  - CoinGecko simple-price JSON (crypto) — no API key needed.
+ *  - Yahoo Finance v8 chart API (indices, VIX, yields, metals, energy, FX) — no API key.
+ *  - CoinGecko simple-price JSON (crypto) — no API key.
+ *
+ * (v1.0 used Stooq CSV quotes; Stooq retired that endpoint behind an anti-bot
+ * wall, so v1.1 switched to Yahoo's chart API.)
  */
 object FeedParsers {
 
-    /** Static metadata for the Stooq symbols we poll. */
-    val STOOQ_SYMBOLS: Map<String, Pair<String, AssetClass>> = mapOf(
-        "^spx" to ("S&P 500" to AssetClass.EQUITY),
+    /** Static metadata for the Yahoo symbols we poll. */
+    val YAHOO_SYMBOLS: Map<String, Pair<String, AssetClass>> = mapOf(
+        "^gspc" to ("S&P 500" to AssetClass.EQUITY),
         "^dji" to ("Dow Jones" to AssetClass.EQUITY),
-        "^ndq" to ("Nasdaq 100" to AssetClass.EQUITY),
-        "^ukx" to ("FTSE 100" to AssetClass.EQUITY),
-        "^nkx" to ("Nikkei 225" to AssetClass.EQUITY),
-        "10usy.b" to ("US 10Y Yield" to AssetClass.BOND),
-        "2usy.b" to ("US 2Y Yield" to AssetClass.BOND),
-        "xauusd" to ("Gold" to AssetClass.METAL),
-        "xagusd" to ("Silver" to AssetClass.METAL),
-        "cl.f" to ("WTI Crude" to AssetClass.ENERGY),
-        "eurusd" to ("EUR / USD" to AssetClass.FX),
-        "usdjpy" to ("USD / JPY" to AssetClass.FX),
-        "usdchf" to ("USD / CHF" to AssetClass.FX)
+        "^ixic" to ("Nasdaq" to AssetClass.EQUITY),
+        "^ftse" to ("FTSE 100" to AssetClass.EQUITY),
+        "^n225" to ("Nikkei 225" to AssetClass.EQUITY),
+        "^vix" to ("VIX Fear Index" to AssetClass.VOLATILITY),
+        "^tnx" to ("US 10Y Yield" to AssetClass.BOND),
+        "^irx" to ("US 3M Yield" to AssetClass.BOND),
+        "gc=f" to ("Gold" to AssetClass.METAL),
+        "si=f" to ("Silver" to AssetClass.METAL),
+        "cl=f" to ("WTI Crude" to AssetClass.ENERGY),
+        "eurusd=x" to ("EUR / USD" to AssetClass.FX),
+        "jpy=x" to ("USD / JPY" to AssetClass.FX),
+        "chf=x" to ("USD / CHF" to AssetClass.FX)
     )
 
     /**
-     * Parses Stooq CSV in the `f=sd2t2ohlcv&h&e=csv` format:
-     * `Symbol,Date,Time,Open,High,Low,Close,Volume` with one row per symbol.
-     * Day change is computed open -> close. Rows with `N/D` data are skipped.
+     * Parses one Yahoo v8 chart response:
+     * `{"chart":{"result":[{"meta":{"regularMarketPrice":..,"regularMarketChangePercent":..,
+     *   "chartPreviousClose":..}}],"error":null}}`
+     *
+     * @param requestedSymbol the symbol we asked for (Yahoo sometimes rewrites
+     *   FX symbols in `meta.symbol`, so we key on what we requested)
+     * @return the quote, or null if the payload has no usable price
      */
-    fun parseStooqCsv(csv: String): List<MarketQuote> {
-        val quotes = mutableListOf<MarketQuote>()
-        csv.lineSequence().drop(1).forEach { line ->
-            val cols = line.trim().split(",")
-            if (cols.size < 7) return@forEach
-            val symbol = cols[0].lowercase()
-            val meta = STOOQ_SYMBOLS[symbol] ?: return@forEach
-            val open = cols[3].toDoubleOrNull() ?: return@forEach
-            val close = cols[6].toDoubleOrNull() ?: return@forEach
-            if (open <= 0.0) return@forEach
-            val changePct = (close - open) / open * 100.0
-            quotes.add(MarketQuote(symbol, meta.first, meta.second, close, changePct))
+    fun parseYahooChart(json: String, requestedSymbol: String): MarketQuote? {
+        val key = requestedSymbol.lowercase()
+        val meta = YAHOO_SYMBOLS[key] ?: return null
+        val root = JSONObject(json)
+        val result = root.optJSONObject("chart")?.optJSONArray("result") ?: return null
+        if (result.length() == 0) return null
+        val m = result.optJSONObject(0)?.optJSONObject("meta") ?: return null
+
+        val price = m.optDouble("regularMarketPrice", Double.NaN)
+        if (price.isNaN()) return null
+
+        var change = m.optDouble("regularMarketChangePercent", Double.NaN)
+        if (change.isNaN()) {
+            val prev = m.optDouble("chartPreviousClose", Double.NaN)
+            change = if (!prev.isNaN() && prev != 0.0) (price - prev) / prev * 100.0 else 0.0
         }
-        return quotes
+        return MarketQuote(key, meta.first, meta.second, price, change)
     }
 
     /**

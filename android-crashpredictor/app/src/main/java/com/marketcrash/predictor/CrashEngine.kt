@@ -10,10 +10,12 @@ import kotlin.math.roundToInt
  * stress signals and a single 0–100 Crash Index:
  *
  *  - Equity slide (S&P, Dow, Nasdaq, FTSE, Nikkei — worst daily move)
+ *  - Fear gauge: the VIX level itself
  *  - Crypto rout (BTC / ETH 24 h)
  *  - Flight to gold (gold spiking while stocks fall)
  *  - Silver stress, oil shock (both directions)
- *  - Bond convulsion (10Y yield jerking) and 2s10s curve inversion
+ *  - Bond convulsion (10Y yield jerking) and 3m10y curve inversion
+ *    (the Fed's preferred recession signal)
  *  - Safe-haven FX flight (CHF / JPY bid, i.e. USDCHF / USDJPY dropping hard)
  */
 object CrashEngine {
@@ -40,6 +42,18 @@ object CrashEngine {
             add("Equity slide", sev, 3.0, fmt("%s %+.2f%% today", worstEquity.name, c))
         }
 
+        // --- Fear gauge: VIX absolute level -----------------------------------
+        bySymbol["^vix"]?.let { vix ->
+            val v = vix.price
+            val sev = when {
+                v >= 40.0 -> 3
+                v >= 30.0 -> 2
+                v >= 20.0 -> 1
+                else -> 0
+            }
+            add("Fear gauge (VIX)", sev, 2.5, fmt("VIX at %.1f (%+.1f%%)", v, vix.changePct))
+        }
+
         // --- Crypto rout ----------------------------------------------------
         val worstCrypto = quotes.filter { it.assetClass == AssetClass.CRYPTO }
             .minByOrNull { it.changePct }
@@ -55,7 +69,7 @@ object CrashEngine {
         }
 
         // --- Flight to gold ---------------------------------------------------
-        bySymbol["xauusd"]?.let { gold ->
+        bySymbol["gc=f"]?.let { gold ->
             val c = gold.changePct
             val sev = when {
                 c >= 4.0 -> 3
@@ -67,7 +81,7 @@ object CrashEngine {
         }
 
         // --- Silver stress ----------------------------------------------------
-        bySymbol["xagusd"]?.let { silver ->
+        bySymbol["si=f"]?.let { silver ->
             val sev = when {
                 abs(silver.changePct) >= 6.0 -> 2
                 abs(silver.changePct) >= 3.0 -> 1
@@ -77,7 +91,7 @@ object CrashEngine {
         }
 
         // --- Oil shock (crash = demand collapse, spike = supply panic) -------
-        bySymbol["cl.f"]?.let { oil ->
+        bySymbol["cl=f"]?.let { oil ->
             val c = oil.changePct
             val sev = when {
                 abs(c) >= 10.0 -> 3
@@ -89,7 +103,7 @@ object CrashEngine {
         }
 
         // --- Bond convulsion: 10Y yield jerking hard --------------------------
-        bySymbol["10usy.b"]?.let { tenYq ->
+        bySymbol["^tnx"]?.let { tenYq ->
             val movePct = tenYq.changePct.absoluteValue
             val sev = when {
                 movePct >= 7.0 -> 3
@@ -103,23 +117,23 @@ object CrashEngine {
             )
         }
 
-        // --- Yield-curve inversion: 2Y above 10Y = recession klaxon ----------
-        val twoY = bySymbol["2usy.b"]
-        val tenY = bySymbol["10usy.b"]
-        if (twoY != null && tenY != null) {
-            val spread = tenY.price - twoY.price
+        // --- Yield-curve inversion: 3M above 10Y = recession klaxon ----------
+        val threeM = bySymbol["^irx"]
+        val tenY = bySymbol["^tnx"]
+        if (threeM != null && tenY != null) {
+            val spread = tenY.price - threeM.price
             val sev = when {
                 spread <= -0.5 -> 3
                 spread <= -0.2 -> 2
                 spread < 0.0 -> 1
                 else -> 0
             }
-            add("Curve inversion", sev, 2.5, fmt("2s10s spread %+.2f pts", spread))
+            add("Curve inversion", sev, 2.5, fmt("3m10y spread %+.2f pts", spread))
         }
 
         // --- Safe-haven FX flight: CHF / JPY strengthening hard --------------
-        val chf = bySymbol["usdchf"]
-        val jpy = bySymbol["usdjpy"]
+        val chf = bySymbol["chf=x"]
+        val jpy = bySymbol["jpy=x"]
         val havenMove = listOfNotNull(chf?.changePct, jpy?.changePct).minOrNull()
         if (havenMove != null) {
             val sev = when {

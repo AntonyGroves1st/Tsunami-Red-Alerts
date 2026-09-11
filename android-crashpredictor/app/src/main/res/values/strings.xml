@@ -23,5 +23,5 @@
     <string name="show_all_fortunes">View the full fifty</string>
     <string name="hide_fortunes">Fold the list away</string>
 
-    <string name="disclaimer">Market data: Stooq &amp; CoinGecko public feeds. The billionaire, flight and leader boards are heuristic indicators derived from live market stress — an early-warning metaphor, not surveillance of real people. Nothing here is financial advice.</string>
+    <string name="disclaimer">Market data: Yahoo Finance &amp; CoinGecko public feeds. The billionaire, flight and leader boards are heuristic indicators derived from live market stress — an early-warning metaphor, not surveillance of real people. Nothing here is financial advice.</string>
 </resources>

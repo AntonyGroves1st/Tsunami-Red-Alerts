@@ -11,6 +11,7 @@ enum class CrashLevel(val label: String) {
 /** Asset classes tracked on the dashboard. */
 enum class AssetClass(val label: String) {
     EQUITY("Equities"),
+    VOLATILITY("Volatility"),
     BOND("Bonds"),
     METAL("Metals"),
     ENERGY("Energy"),

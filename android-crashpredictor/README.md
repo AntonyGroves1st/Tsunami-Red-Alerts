@@ -6,14 +6,17 @@
 
 | Layer | Coverage | Source |
 | --- | --- | --- |
-| Equities | S&P 500, Dow Jones, Nasdaq 100, FTSE 100, Nikkei 225 | Stooq free CSV quotes |
-| Bonds | US 10Y & 2Y yields, 2s10s curve inversion | Stooq |
-| Metals | Gold, Silver | Stooq |
-| Energy | WTI crude | Stooq |
-| Currencies | EUR/USD, USD/JPY, USD/CHF safe-haven flight | Stooq |
+| Equities | S&P 500, Dow Jones, Nasdaq, FTSE 100, Nikkei 225 | Yahoo Finance chart API (key-less) |
+| Volatility | VIX fear index | Yahoo Finance |
+| Bonds | US 10Y & 3M yields, 3m10y curve inversion (the Fed's preferred recession signal) | Yahoo Finance |
+| Metals | Gold, Silver | Yahoo Finance |
+| Energy | WTI crude | Yahoo Finance |
+| Currencies | EUR/USD, USD/JPY, USD/CHF safe-haven flight | Yahoo Finance |
 | Crypto | Bitcoin, Ethereum 24 h | CoinGecko free API |
 
-Each sweep scores eight weighted stress signals — equity slide, crypto rout, flight to gold, silver stress, oil shock, bond convulsion, curve inversion, safe-haven FX flight — into the Crash Index. Levels: **SERENE → EARLY-BIRD WATCH → STRESS WARNING → GLOBAL CRASH ALERT** (index 75+).
+Each sweep scores nine weighted stress signals — equity slide, VIX fear gauge, crypto rout, flight to gold, silver stress, oil shock, bond convulsion, curve inversion, safe-haven FX flight — into the Crash Index. Levels: **SERENE → EARLY-BIRD WATCH → STRESS WARNING → GLOBAL CRASH ALERT** (index 75+).
+
+> v1.1: switched market data from Stooq (which retired its CSV quote endpoint behind an anti-bot wall, breaking v1.0) to Yahoo Finance's key-less chart API, and added the VIX signal.
 
 ## The sentinel layer (the fun part)
 

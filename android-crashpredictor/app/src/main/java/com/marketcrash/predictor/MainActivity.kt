@@ -234,7 +234,7 @@ class MainActivity : AppCompatActivity() {
             level = CrashLevel.CRASH,
             signals = listOf(
                 Signal("Equity slide", 3, 3.0, "S&P 500 -8.4% today (simulated)"),
-                Signal("Curve inversion", 3, 2.5, "2s10s spread -0.62 pts (simulated)"),
+                Signal("Curve inversion", 3, 2.5, "3m10y spread -0.62 pts (simulated)"),
                 Signal("Flight to gold", 3, 2.0, "Gold +5.1% today (simulated)"),
                 Signal("Crypto rout", 3, 1.5, "Bitcoin -24% / 24h (simulated)")
             )

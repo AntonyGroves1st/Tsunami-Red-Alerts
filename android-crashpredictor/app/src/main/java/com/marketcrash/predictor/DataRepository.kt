@@ -14,10 +14,10 @@ data class MarketSnapshot(
 
 object DataRepository {
 
-    private val STOOQ_URL =
-        "https://stooq.com/q/l/?s=" +
-            FeedParsers.STOOQ_SYMBOLS.keys.joinToString("+") +
-            "&f=sd2t2ohlcv&h&e=csv"
+    private fun yahooUrl(symbol: String): String {
+        val enc = java.net.URLEncoder.encode(symbol.uppercase(), "UTF-8")
+        return "https://query1.finance.yahoo.com/v8/finance/chart/$enc?interval=1d&range=1d"
+    }
 
     private const val COINGECKO_URL =
         "https://api.coingecko.com/api/v3/simple/price" +
@@ -27,25 +27,30 @@ object DataRepository {
         val conn = URL(url).openConnection() as HttpURLConnection
         conn.connectTimeout = 15000
         conn.readTimeout = 20000
-        conn.setRequestProperty("User-Agent", "MarketCrashPredictor/1.0 (personal market monitor)")
-        conn.setRequestProperty("Accept", "text/csv, application/json, */*")
+        conn.setRequestProperty(
+            "User-Agent",
+            "Mozilla/5.0 (Linux; Android) MarketCrashPredictor/1.1 (personal market monitor)"
+        )
+        conn.setRequestProperty("Accept", "application/json, */*")
         return conn.inputStream.bufferedReader().use { it.readText() }
     }
 
     suspend fun fetchAll(): MarketSnapshot = withContext(Dispatchers.IO) {
-        val errors = mutableListOf<String>()
+        val errors = java.util.Collections.synchronizedList(mutableListOf<String>())
         coroutineScope {
-            val stooqJob = async {
-                runCatching { FeedParsers.parseStooqCsv(httpGet(STOOQ_URL)) }
-                    .getOrElse { errors.add("Stooq market feed: ${it.message}"); emptyList() }
+            val yahooJobs = FeedParsers.YAHOO_SYMBOLS.keys.map { symbol ->
+                async {
+                    runCatching { FeedParsers.parseYahooChart(httpGet(yahooUrl(symbol)), symbol) }
+                        .getOrElse { errors.add("Yahoo $symbol: ${it.message}"); null }
+                }
             }
             val cryptoJob = async {
                 runCatching { FeedParsers.parseCoinGecko(httpGet(COINGECKO_URL)) }
                     .getOrElse { errors.add("CoinGecko crypto feed: ${it.message}"); emptyList() }
             }
-            val quotes = stooqJob.await() + cryptoJob.await()
+            val quotes = yahooJobs.mapNotNull { it.await() } + cryptoJob.await()
             quotes.forEach { HistoryStore.record(it.symbol, it.price) }
-            MarketSnapshot(quotes, errors)
+            MarketSnapshot(quotes, errors.toList())
         }
     }
 }

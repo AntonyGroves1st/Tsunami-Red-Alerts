@@ -5,16 +5,21 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.AudioAttributes
+import android.media.RingtoneManager
 import androidx.core.app.NotificationCompat
 
 object Notifier {
 
-    const val CHANNEL_ALERTS = "crash_alerts"
+    // v2 channel id: channel settings freeze on creation, so adding the alarm
+    // sound for users upgrading from 1.0/1.1 requires a fresh channel.
+    const val CHANNEL_ALERTS = "crash_alerts_v2"
     const val CHANNEL_WATCH = "sentinel_watch"
     const val CRASH_NOTIFICATION_ID = 1929
 
     fun ensureChannels(context: Context) {
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        nm.deleteNotificationChannel("crash_alerts")
         nm.createNotificationChannel(
             NotificationChannel(
                 CHANNEL_ALERTS, "Crash alerts", NotificationManager.IMPORTANCE_HIGH
@@ -22,6 +27,13 @@ object Notifier {
                 description = "Sirens for WARNING / CRASH levels of the Crash Index"
                 enableVibration(true)
                 vibrationPattern = longArrayOf(0, 600, 200, 600, 200, 600)
+                setSound(
+                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM),
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ALARM)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .build()
+                )
             }
         )
         nm.createNotificationChannel(

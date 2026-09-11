@@ -58,6 +58,13 @@ class MainActivity : AppCompatActivity() {
         binding.testButton.setOnClickListener { fireTestAlert() }
         binding.eliteToggle.setOnClickListener { toggleEliteList() }
 
+        // Tap a section header to fold it away — keeps the dashboard phone-sized.
+        bindCollapsible(binding.sectionMarkets, binding.assetGrid, startExpanded = true)
+        bindCollapsible(binding.sectionSignals, binding.signalsCard, startExpanded = true)
+        bindCollapsible(binding.sectionElite, binding.eliteCard, startExpanded = true)
+        bindCollapsible(binding.sectionBunker, binding.bunkerCard, startExpanded = true)
+        bindCollapsible(binding.sectionLeaders, binding.leadersCard, startExpanded = false)
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 while (true) {
@@ -69,6 +76,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun daySeed(): Long = System.currentTimeMillis() / 86_400_000L
+
+    /** Makes a section header toggle its card's visibility, with a fold chevron. */
+    private fun bindCollapsible(header: android.widget.TextView, card: View, startExpanded: Boolean) {
+        val base = header.text.toString()
+        fun render() {
+            header.text = if (card.visibility == View.VISIBLE) "$base  \u25BE" else "$base  \u25B8"
+        }
+        card.visibility = if (startExpanded) View.VISIBLE else View.GONE
+        render()
+        header.setOnClickListener {
+            card.visibility = if (card.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+            render()
+        }
+    }
 
     private fun refresh() {
         if (refreshing) return
@@ -256,11 +277,18 @@ class MainActivity : AppCompatActivity() {
             repeatCount = ValueAnimator.INFINITE
             start()
         }
+        AlarmSiren.start(this)
     }
 
     private fun hideCrashOverlay() {
+        AlarmSiren.stop()
         overlayPulse?.cancel()
         binding.crashOverlay.visibility = View.GONE
+    }
+
+    override fun onDestroy() {
+        AlarmSiren.stop()
+        super.onDestroy()
     }
 
     private fun vibrateAlarm() {

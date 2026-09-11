@@ -102,6 +102,12 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         binding.watchButton.setOnClickListener { toggleWatchService() }
         binding.dismissOverlayButton.setOnClickListener { hideRedOverlay() }
 
+        binding.footerStatus.setOnClickListener { binding.scrollView.smoothScrollTo(0, 0) }
+        binding.footerQuakes.setOnClickListener { scrollToSection(binding.labelQuakes) }
+        binding.footerBuoys.setOnClickListener { scrollToSection(binding.labelBuoys) }
+        binding.footerWater.setOnClickListener { scrollToSection(binding.labelWater) }
+        binding.footerPressure.setOnClickListener { scrollToSection(binding.labelPressure) }
+
         // Reflect any already-running background watch (e.g. after reopening the app).
         watchRunning = WatchService.isRunning
         updateWatchUi()
@@ -344,6 +350,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             watchRunning = true
         }
         updateWatchUi()
+    }
+
+    /** Smooth-scroll the main content so the given section header sits near the top. */
+    private fun scrollToSection(target: View) {
+        binding.scrollView.smoothScrollTo(0, target.top)
     }
 
     /** Sync the watch button label and the top "SCANNING" indicator to the watch state. */

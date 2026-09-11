@@ -24,4 +24,9 @@
     <string name="red_overlay_title">🚨 TSUNAMI RED ALERT 🚨</string>
     <string name="red_overlay_sub">MOVE TO HIGH GROUND — THIS IS NOT A DRILL UNLESS MARKED TEST</string>
     <string name="dismiss">Dismiss</string>
+    <string name="footer_status">Status</string>
+    <string name="footer_quakes">Quakes</string>
+    <string name="footer_buoys">Buoys</string>
+    <string name="footer_water">Water</string>
+    <string name="footer_pressure">Pressure</string>
 </resources>

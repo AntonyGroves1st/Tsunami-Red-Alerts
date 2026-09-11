@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private var overlayPulse: ObjectAnimator? = null
     private var screenFlash: ObjectAnimator? = null
     private var scanningPulse: ObjectAnimator? = null
+    private var activeFooterIndex = -1
     private var lastShownLevel = AlertLevel.GREEN
     private lateinit var alarmSiren: AlarmSiren
     private var alarmVibrator: Vibrator? = null
@@ -376,6 +377,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
      * glyph, and brighten its label; mute the rest. Child order per item is
      * [indicator, glyph, label]. */
     private fun setActiveFooter(index: Int) {
+        if (index == activeFooterIndex) return
+        activeFooterIndex = index
         val items = listOf(
             binding.footerStatus, binding.footerQuakes, binding.footerBuoys,
             binding.footerWater, binding.footerPressure
@@ -386,6 +389,12 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             (item.getChildAt(1) as? TextView)?.apply {
                 setTextColor(ContextCompat.getColor(this@MainActivity, if (active) R.color.scan else R.color.text_secondary))
                 setTypeface(null, if (active) Typeface.BOLD else Typeface.NORMAL)
+                if (active) {
+                    // Quick pop so the newly selected item feels responsive.
+                    scaleX = 1.25f
+                    scaleY = 1.25f
+                    animate().scaleX(1f).scaleY(1f).setDuration(180).start()
+                }
             }
             (item.getChildAt(2) as? TextView)?.setTextColor(
                 ContextCompat.getColor(this, if (active) R.color.text_primary else R.color.text_secondary)

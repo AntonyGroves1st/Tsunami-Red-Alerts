@@ -19,26 +19,43 @@
             android:padding="16dp"
             android:paddingBottom="96dp">
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/headerBlock"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/title"
-                android:textColor="@color/accent"
-                android:textSize="26sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.08"
-                android:shadowColor="@color/accent_glow"
-                android:shadowRadius="18"
-                android:shadowDx="0"
-                android:shadowDy="0" />
+                android:orientation="vertical"
+                android:background="@drawable/card_bg"
+                android:padding="16dp"
+                android:layout_marginBottom="14dp"
+                android:elevation="6dp">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/subtitle"
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp"
-                android:layout_marginBottom="12dp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title"
+                    android:textColor="@color/accent"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.08"
+                    android:shadowColor="@color/accent_glow"
+                    android:shadowRadius="18"
+                    android:shadowDx="0"
+                    android:shadowDy="0" />
+
+                <View
+                    android:layout_width="64dp"
+                    android:layout_height="3dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/title_accent_bar" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/subtitle"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/scanningIndicator"

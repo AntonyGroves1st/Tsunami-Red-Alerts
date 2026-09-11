@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="cave_black">#0E0B08</color>
+    <color name="cave_dark">#171310</color>
+    <color name="cave_surface">#221B15</color>
+    <color name="cave_surface_alt">#2C231B</color>
+    <color name="ember">#E8A15C</color>
+    <color name="ember_dark">#B4763A</color>
+    <color name="torch">#F2C879</color>
+    <color name="stone">#8A7C6C</color>
+    <color name="stone_light">#C7B8A5</color>
+    <color name="text_primary">#F4EDE2</color>
+    <color name="text_secondary">#B9AC99</color>
+    <color name="moss">#7FA05A</color>
+    <color name="danger">#D9694A</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+</resources>
